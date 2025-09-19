@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case File: Entity-0x3F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Glitch Noir -->
+    <!-- Application Structure Plan: A tab-based SPA design was chosen to mimic exploring a classified digital case file. This allows users to actively engage with the content by switching between sections (Overview, Abilities, Theories, Encounters) rather than passively scrolling. This non-linear exploration enhances the feeling of piecing together fragmented information about an anomaly. Interactions are click-based to reveal content, reinforcing the theme of uncovering hidden or corrupted data. -->
+    <!-- Visualization & Content Choices: The content is primarily textual. The goal is to inform and create an unsettling atmosphere. Presentation method is interactive text blocks. Users click on a tab (e.g., "Anomalous Abilities") to display the relevant list. Clicking on an item within that list could be a future enhancement to show more detail. This method is chosen for its directness and thematic fit with a digital file interface. All elements are created with HTML/CSS/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0a0a0a;
+            color: #d4d4d4;
+            overflow-x: hidden;
+        }
+        .glitch-text {
+            font-family: 'Roboto Mono', monospace;
+            text-shadow: 2px 2px 0px #ff00ff, -2px -2px 0px #00ffff;
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .nav-item {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .nav-item.active {
+            color: #ffffff;
+            border-color: #00ffff;
+            background-color: rgba(0, 255, 255, 0.1);
+            text-shadow: 0 0 5px #00ffff;
+        }
+        .nav-item:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .content-section {
+            display: none;
+            border: 1px solid #333;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s ease-in-out;
+            min-height: 400px;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 2;
+            animation: scanline-anim 10s linear infinite;
+        }
+        @keyframes glitch-anim {
+            0% { text-shadow: 2px 2px 0px #ff00ff, -2px -2px 0px #00ffff; }
+            25% { text-shadow: -2px 2px 0px #ff00ff, 2px -2px 0px #00ffff; }
+            50% { text-shadow: 2px -2px 0px #ff00ff, -2px 2px 0px #00ffff; }
+            75% { text-shadow: -2px -2px 0px #ff00ff, 2px 2px 0px #00ffff; }
+            100% { text-shadow: 2px 2px 0px #ff00ff, -2px -2px 0px #00ffff; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scanline-anim {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+        .special-font {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+    <div class="scanline"></div>
+    <div class="max-w-5xl mx-auto relative z-10">
+
+        <header class="text-center mb-8 border-b-2 border-cyan-500 pb-4">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold glitch-text">ᒷリℸ ̣ ╎ℸ ̣ ||-0 ̇/3⎓</h1>
+            <p class="text-lg text-neutral-400 mt-2">CLASSIFIED CASE FILE</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center border border-neutral-700 bg-neutral-900/50 p-2 rounded-md">
+            <button class="nav-item active" data-tab="overview">Overview</button>
+            <button class="nav-item" data-tab="abilities">Anomalous Abilities</button>
+            <button class="nav-item" data-tab="theories">Theories on Origin</button>
+            <button class="nav-item" data-tab="encounters">Documented Encounters</button>
+        </nav>
+
+        <main id="content-container" class="mt-4">
+            <section id="overview" class="content-section active">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Designation Details</h2>
+                <div class="space-y-4">
+                    <p><strong class="text-white">Name:</strong> <span class="special-font">ᒷリℸ ̣ ╎ℸ ̣ ||-0 ̇/3⎓</span></p>
+                    <p><strong class="text-white">Status/Danger Level:</strong> Psychological Threat - Cognitive Dissonance Class-A</p>
+                    <p><strong class="text-white">Origin:</strong> Unconfirmed, likely Extradimensional</p>
+                </div>
+                <h3 class="text-xl font-bold mt-8 mb-4 text-cyan-400">Core Description</h3>
+                <p class="leading-relaxed">Entity-0x3F is a non-Euclidean, sentient phenomenon that manifests as a solid black, cat-like silhouette with a glowing white outline. Its only discernible facial features are large, blank white eyes, which serve as its primary means of influence. It is often observed wearing a simple hoodie, a detail that stands in stark, unsettling contrast to its anomalous nature. The entity's presence does not cause direct physical harm; instead, it targets the mind, destabilizing perception and the sense of self. Prolonged exposure can lead to severe paranoia, memory gaps, and a complete erosion of identity. The entity's designation, 0x3F, was chosen by researchers after file entries would corrupt, only rendering as a "?".</p>
+            </section>
+
+            <section id="abilities" class="content-section">
+                 <h2 class="text-2xl font-bold mb-4 text-cyan-400">Anomalous Abilities</h2>
+                 <ul class="list-disc list-inside space-y-3">
+                    <li><strong class="text-white">Temporal Fragmentation (Observed):</strong> The entity's presence causes localized temporal inconsistencies. Victims report "skipping" or "glitching" through time, with brief moments and memories appearing out of sequence.</li>
+                    <li><strong class="text-white">Reality Weaving (Confirmed):</strong> Entity-0x3F can subtly alter its immediate environment. Walls may warp, hallways may extend indefinitely, and objects may appear or disappear from view. This ability is directly linked to its "Domain Corruption."</li>
+                    <li><strong class="text-white">Auditory Corruption (Confirmed):</strong> The entity does not communicate via traditional means. Instead, its presence is often accompanied by bursts of static, a low-frequency hum, or distorted, reversed snippets of familiar sounds.</li>
+                    <li><strong class="text-white">Emotional Dissonance (Probable):</strong> Direct contact with the entity’s gaze has been shown to induce a state of profound emotional numbness or a complete disconnect from one’s own feelings. This leaves subjects unable to distinguish between fear and calm, leading to a breakdown of emotional response.</li>
+                    <li><strong class="text-white">Psychic Infusion (Confirmed):</strong> Entity-0x3F can insert memories, ideas, and visual data into a subject’s consciousness. This information often appears as fragmented, glitching symbols or corrupted files, making it impossible to distinguish genuine memory from fabricated data.</li>
+                    <li><strong class="text-white">Domain Corruption (Primary Ability):</strong> The entity's true danger lies in its ability to corrupt the "rules" of a given reality. It causes a subject to perceive the world as a bugged, distorted game, with visual glitches, screen tearing, and the manifestation of its language—a collection of symbols and runes—overlaid on their vision.</li>
+                 </ul>
+            </section>
+
+            <section id="theories" class="content-section">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Theories on Origin</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">The Fused Psyche</h3>
+                        <p>It is the fractured remnant of a human mind that was accidentally fused with an informational void during a catastrophic quantum event. It now seeks to absorb other minds to fill the gaps in its own shattered consciousness.</p>
+                    </div>
+                    <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">A Lingering Blueprint</h3>
+                        <p>The entity is not a creature, but a failed architectural concept—a blueprint for a reality that was never built. It exists in the negative space between dimensions, and its presence causes reality to "render" incorrectly.</p>
+                    </div>
+                    <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">A Viral Paradox</h3>
+                        <p>A self-propagating memetic virus, a piece of sentient code that gained autonomy. It infects and rewrites a subject's perception, making them experience the world as a corrupted version of itself.</p>
+                    </div>
+                    <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">A Cognitive Parasite</h3>
+                        <p>The entity is not a byproduct of an event, but a living concept that feeds on the coherence of consciousness itself. It is a natural predator of identity and coherent thought.</p>
+                    </div>
+                     <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">An Incomplete Avatar</h3>
+                        <p>The hoodie and cat-like form are merely a limited, corrupted interface of a larger, incomprehensible entity. Its "Domain Corruption" ability is a direct attempt to rewrite reality to fit its own, true form.</p>
+                    </div>
+                     <div class="border border-neutral-700 p-4 rounded">
+                        <h3 class="font-bold text-white mb-2">A Recursive Paradox</h3>
+                        <p>The entity is a data loop that constantly attempts to access a memory or state that no longer exists, and its failed attempts cause reality to fracture and break around it.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="encounters" class="content-section">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Documented Encounters</h2>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-A</h3>
+                        <p>A subject reported “walking into a blank space that wasn’t there yesterday.” Upon returning, their speech patterns included static bursts and prolonged silences, indicative of cognitive file corruption.</p>
+                    </div>
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-B</h3>
+                        <p>A recon team claimed differing versions of the same room after an encounter. No two testimonies aligned, a prime example of the entity's reality-warping abilities.</p>
+                    </div>
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-C</h3>
+                        <p>A civilian documented a shadow on their wall that persisted even when no light source was present. They have since gone missing, likely a result of the entity’s complete absorption of their mind.</p>
+                    </div>
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-D</h3>
+                        <p>A researcher noted a pair of white eyes staring from the ceiling corner; after blinking, the entity was suddenly face-to-face. The researcher was later found in a catatonic state, repeating a single line of corrupted code.</p>
+                    </div>
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-E</h3>
+                        <p>Multiple paw-print scorch marks were found on reinforced steel doors. Thermal scans of the marks revealed anomalous cold heat signatures, a paradoxical violation of physics that indicates the entity’s physical presence is a contradictory concept.</p>
+                    </div>
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-white">Incident 734-F</h3>
+                        <p>File [REDACTED], the result of a direct data-stream encounter. The incident file was immediately corrupted, with the last recorded log being a repeating phrase in the entity's language, "<span class="special-font">ᒷリℸ ̣ ╎ℸ ̣ ||-0 ̇/3⎓ᒷリℸ ̣ ╎ℸ ̣ ||-0 ̇/3⎓</span>."</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const tab = item.dataset.tab;
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === tab) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
