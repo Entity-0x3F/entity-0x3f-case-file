@@ -71,7 +71,7 @@
             white-space: pre;
             /* Glitch effect: multiple shadow layers that shift rapidly, suggesting afterimages/trails */
             text-shadow: 
-                0 0 5px #0f0,  /* Green aura */
+                0 0 5px #0f0, /* Green aura */
                 4px 4px 0px rgba(255, 0, 0, 0.4), /* Red ghost trail */
                 -4px -4px 0px rgba(0, 0, 255, 0.4); /* Blue ghost trail */
             animation: glitch-shift 0.1s infinite alternate;
@@ -81,7 +81,7 @@
             50% { transform: translate(-2px, -2px); }
             100% { transform: translate(0, 0); }
         }
-        /* New style for the corrupted text */
+        /* Style for the fixed corrupted text in logs */
         .corrupted-text {
             color: #f00; /* Red color for error/corruption */
             font-size: 1.2rem;
@@ -93,6 +93,25 @@
             0% { text-shadow: 0 0 3px #f00; transform: skewX(1deg); }
             50% { text-shadow: 0 0 6px #0ff; transform: skewX(-1deg); }
             100% { text-shadow: 0 0 3px #f00; transform: skewX(0); }
+        }
+
+        /* NEW: Style for the random overlay glitches */
+        #glitch-flicker-overlay {
+            position: absolute;
+            z-index: 1000; /* Ensure it's on top of content */
+            font-size: 1.4rem;
+            color: #ff00ff; /* Magenta for contrast */
+            text-shadow: 0 0 7px #ff00ff, 0 0 2px #0ff; /* Dual glow effect */
+            opacity: 0;
+            pointer-events: none;
+        }
+        .glitch-active {
+            opacity: 1 !important;
+            animation: text-glitch-fast 0.05s infinite alternate;
+        }
+        @keyframes text-glitch-fast {
+            0% { transform: translate(1px, 1px) skewX(0.5deg); opacity: 0.9; }
+            100% { transform: translate(-1px, -1px) skewX(-0.5deg); opacity: 1; }
         }
 
         /* Mobile adjustments for figure placement */
@@ -118,7 +137,7 @@
 
         <!-- HEADER AND COMMAND LINE PROMPT -->
         <header class="mb-6 border-b border-green-500 pb-2">
-            <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.4</h1>
+            <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.5 (A-Z COMPLETE)</h1>
             <p class="mt-1">ACCESS: [SECURE] WARNING: [DATA-LAYER CORRUPTION IMMINENT]</p>
         </header>
 
@@ -136,16 +155,19 @@
             </nav>
 
             <!-- RIGHT CONTENT AREA -->
-            <main id="content-area" class="md:col-span-3 lg:col-span-3">
+            <main id="content-area" class="md:col-span-3 lg:col-span-3 relative"> <!-- Added relative to scope the absolute glitch -->
 
                 <!-- STICK FIGURE VISUAL (Glitches constantly with afterimage effect) -->
                 <div class="stick-figure hidden md:block lg:col-span-1">
                     <pre class="stick-figure-glitch">
-  O  
- /|\ 
- / \
+ O  
+/|\ 
+/ \
 </pre>
                 </div>
+                
+                <!-- NEW: Dynamic Glitch Overlay -->
+                <span id="glitch-flicker-overlay" class="absolute top-0 left-0" style="display: none;"></span>
 
 
                 <!-- INTERACTIVE CONTENT SECTIONS -->
@@ -177,13 +199,16 @@
                             <span class="text-white">A_03: AUDITORY_STATIC_CONTAGION</span>
                             &gt; EFFECT: EMITS HIGH-INTENSITY STATIC AND CORRUPTED HUMS, CAUSING DISORIENTATION AND DATA CONTAMINATION IN AUDIO GEAR.
                             <br>
-                            <span class="text-white">A_04: REALITY_DE_RESOLUTION</span>
-                            &gt; EFFECT: TEMPORARILY REMOVES TEXTURES AND DEFINITION from surrounding surfaces.
+                            <span class="text-white">A_04: REALITY_GLITCH_INJECTION (Creation/Weaponization)</span>
+                            &gt; EFFECT: USES TEMPORAL INSTABILITY TO MANIFEST SIMPLE OBJECTS OR WEAPONS.
+                            <br>
+                            <span class="text-white">A_05: BLUE_FLOWER_PARADOX</span>
+                            &gt; EFFECT: DESPITE AGGRESSIVE ABILITIES, THE ENTITY IS CONSISTENTLY OBSERVED MANIFESTING A **BLUE FLOWER**, WHICH IT ERASES THE MOMENT IT'S NOTICED. (SIGNIFICANCE UNKNOWN)
                         </div>
                     </section>
                     
                     <section id="encounters" class="content-section">
-                        <h2 class="text-xl text-white mb-3">> PULLING ENCOUNTER LOGS (INCIDENT 734 SERIES)</h2>
+                        <h2 class="text-xl text-white mb-3">> PULLING ENCOUNTER LOGS (INCIDENT 734-759 SERIES)</h2>
                         <div class="terminal-output">
                             <span class="text-white">LOG 734-A:</span> SUBJECT REPORTED THE ENTITY 'TELEPORTING' ACROSS A 10M SPACE. LEFT BEHIND STATIC BURSTS AND **THREE FADING AFTERIMAGES** ALONG ITS PATH. (TEMPORAL ECHOES CONFIRMED)
                             <br><br>
@@ -191,13 +216,63 @@
                             <br><br>
                             <span class="text-white">LOG 734-C:</span> ENTIRE AREA REPORTED AS "FLAT AND COLORLESS" BY OBSERVER. WALLS APPEARED AS SIMPLE TWO-TONE BOXES. (REALITY DE-RESOLUTION)
                             <br><br>
-                            <span class="text-white">LOG 734-F:</span> DIRECT DATA-STREAM ENCOUNTER. FILE IMMEDIATELY CORRUPTED. LAST LOG: <span class="corrupted-text">⋮⚍ᓭℸ ̣   ꖎᒷᔑ⍊ᒷ  ᒲᒷ  ᔑꖎ𝙹リᒷ.</span> (TOTAL CORRUPTION)
+                            <span class="text-white">LOG 735-D:</span> A security camera log was found, showing a slow-moving afterimage of ENTITY-NULL physically occupying the same space as a subject for 0.4 seconds. Subject reported a sudden, sharp chill and temporary blindness. (AFTERIMAGE SOLIDITY CONFIRMED)
+                            <br><br>
+                            <span class="text-white">LOG 736-E:</span> A remote probe, upon encountering the entity, began playing all recorded audio in rapid, overlapping loops. The entity's auditory static then completely annihilated the probe's microphone. (RECURSIVE AUDIO DAMAGE)
+                            <br><br>
+                            <span class="text-white">LOG 737-F:</span> OBSERVER NOTICED THE ENTITY MANIFESTING A SHARP, PIXELATED SHARD OF GLASS IN ITS HAND. IT VANISHED MOMENTS LATER. NO INJURY SUSTAINED. (GLITCH-INJECTION TESTING)
+                            <br><br>
+                            <span class="text-white">LOG 738-G:</span> Widespread report of furniture and simple objects in the immediate vicinity briefly 'de-resolving' into single-color geometric shapes. Navigational hazard reported. (ENVIRONMENTAL DE-RESOLUTION)
+                            <br><br>
+                            <span class="text-white">LOG 739-H:</span> A research station reported a persistent, low-frequency hum that corrupted all digital clocks, causing them to show random, non-sequential numbers. (TEMPORAL ANCHOR INSTABILITY)
+                            <br><br>
+                            <span class="text-white">LOG 740-I:</span> OBSERVER CLAIMED THE ENTITY'S 'VOICE' CAUSED PHYSICAL DISCOMFORT, DESCRIBING IT AS "SOUNDING LIKE A RADIO STATION FIGHTING WITH ITSELF." (AUDITORY PAIN RESPONSE)
+                            <br><br>
+                            <span class="text-white">LOG 741-J:</span> A drone recording shows the entity performing rapid-fire Phase-Teleportation, creating a blur of afterimages so dense it formed a temporary 'wall' of noise and static. (DEFENSIVE PHASE MANEUVER)
+                            <br><br>
+                            <span class="text-white">LOG 742-K:</span> Log entry detailing the discovery of a small, vibrant blue flower (species unknown) floating where the entity last stood. The flower decomposed into raw static within 1.2 seconds. (BLUE FLOWER PARADOX DOCUMENTATION)
+                            <br><br>
+                            <span class="text-white">LOG 743-L:</span> Subject lost equilibrium for several hours after witnessing the entity shift its movement trajectory mid-teleport, violating known laws of physics. (LINEARITY FRACTURE)
+                            <br><br>
+                            <span class="text-white">LOG 744-M:</span> An attempt to enclose the entity using a non-digital containment field resulted in the field itself briefly flickering and 'de-resolving' into a flat green line before returning to normal. (CONTAINMENT FIELD RESISTANCE)
+                            <br><br>
+                            <span class="text-white">LOG 745-N:</span> A simple, non-sentient piece of code near the entity reported a sudden, random change in its own function, suggesting the entity can passively corrupt data structures. (PASSIVE DATA CORRUPTION)
+                            <br><br>
+                            <span class="text-white">LOG 746-O:</span> OBSERVER STATED THE ENTITY APPEARED TO BE 'LOOKING' AT ITS OWN AFTERIMAGE before teleporting. Theory suggests the entity may interact with its own temporal echoes. (SPECULATIVE SELF-OBSERVATION)
+                            <br><br>
+                            <span class="text-white">LOG 747-P:</span> Subject reported hearing the entity's corrupted static *inside* their head, even after leaving the area. Requires further investigation. (INNER AUDITORY HALLUCINATION)
+                            <br><br>
+                            <span class="text-white">LOG 748-Q:</span> An instance where the entity glitch-injected a perfect 90-degree corner into an otherwise smooth wall, temporarily trapping a researcher. (GEOMETRIC TRAPPING)
+                            <br><br>
+                            <span class="text-white">LOG 749-R:</span> The entity manifested a simple, large, jagged weapon (resembling an axe) for less than half a second before vanishing. Weapon was gone upon visual confirmation. (AGRESSIVE MANIFESTATION)
+                            <br><br>
+                            <span class="text-white">LOG 750-S:</span> OBSERVER SAW THE ENTITY SLOWLY MANIFEST A BLUE FLOWER, HOLD IT, AND THEN, UPON MAKING EYE CONTACT, INSTANTANEOUSLY ERASE IT. (BLUE FLOWER PARADOX CONFIRMED)
+                            <br><br>
+                            <span class="text-white">LOG 751-T:</span> A log of the entity deliberately leaving behind a single, distorted character of text (`_`) on a monitor screen before disappearing. (CORRUPTED MARKER)
+                            <br><br>
+                            <span class="text-white">LOG 752-U:</span> An unidentified researcher's uniform briefly de-resolved into a flat, gray texture while the entity was in the room. Clothes returned to normal upon entity departure. (TEXTURAL DE-RESOLUTION)
+                            <br><br>
+                            <span class="text-white">LOG 753-V:</span> Multiple afterimages were observed stacking perfectly in one location, causing the area to briefly dim as if reality itself was being compressed. (TEMPORAL STACKING)
+                            <br><br>
+                            <span class="text-white">LOG 754-W:</span> Report details the entity 'hiding' within the static interference of an old television, only visible when the picture briefly cleared. (STATIC CAMOUFLAGE)
+                            <br><br>
+                            <span class="text-white">LOG 755-X:</span> The entity created and immediately dissolved a small, non-sentient stick figure duplicate, suggesting a form of replication is possible but unstable. (FORM DUPLICATION FAILURE)
+                            <br><br>
+                            <span class="text-white">LOG 756-Y:</span> Observer noted that all surrounding light sources briefly shifted color from white to pure green during the entity's phase shift. (ENVIRONMENTAL HUE CORRUPTION)
+                            <br><br>
+                            <span class="text-white">LOG 759-Z:</span> FINAL DIRECT DATA-STREAM ENCOUNTER. FILE IMMEDIATELY CORRUPTED. LAST LOG: <span class="corrupted-text">⋮⚍ᓭℸ ̣ &nbsp; &nbsp;ꖎᒷᔑ⍊ᒷ &nbsp; ᒲᒷ &nbsp; ᔑꖎ𝙹リᒷ.</span> (TOTAL CORRUPTION)
                         </div>
                     </section>
                     
                     <section id="gallery" class="content-section">
-                        <h2 class="text-xl text-white mb-3">> ACCESSING VISUAL LOGS (NOTE: THESE ARE SIMULATIONS)</h2>
-                        <p>No images are currently uploaded. Let's add them next! </p>
+                        <h2 class="text-xl text-white mb-3">> ACCESSING VISUAL LOGS (STATUS: CLASSIFIED)</h2>
+                        <div class="terminal-output">
+                            <p class="text-red-500 text-2xl font-bold mt-8 text-center border border-red-500 p-6 shadow-lg shadow-red-500/50">
+                                WARNING: ACCESS DENIED.<br>
+                                VISUAL ASSETS REQUIRES CLEARANCE LEVEL 5 OR HIGHER.
+                            </p>
+                            <p class="mt-4 text-center">Unauthorized attempts to view may result in localized data corruption.</p>
+                        </div>
                     </section>
 
                 </div>
@@ -237,6 +312,57 @@
 
             // Initial load of the overview section
             activateTab('overview');
+
+
+            // --- NEW GLITCH OVERLAY LOGIC ---
+            const glitchPhrases = [
+                'ꖎᒷᔑ⍊ᒷ', // leave
+                '⊣𝙹 ᔑ∴ᔑ||', // go away
+                '╎ℸ ̣ ᓭ ᒲ|| ⎓ꖎ𝙹∴ᒷ∷!', // it's my flower!
+                'ᒲᔑꖌᒷ ╎ℸ ̣ &nbsp; ᓭℸ ̣ 𝙹! ̣ ', // make it stop!
+                'リ⚍ꖎꖎ', // null
+                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ' // static
+            ];
+            const glitchOverlay = document.getElementById('glitch-flicker-overlay');
+            const contentContainer = document.getElementById('content-container');
+
+            function runRandomGlitch() {
+                if (!contentContainer) {
+                    console.error("Content container not found for glitch effect.");
+                    return;
+                }
+
+                // 1. Select a random phrase
+                const phrase = glitchPhrases[Math.floor(Math.random() * glitchPhrases.length)];
+                glitchOverlay.textContent = phrase;
+                
+                // 2. Set random position (within the bounds of the content area)
+                // Random X offset (30% to 70% of the content container width)
+                const randomX = Math.random() * 40 + 30; 
+                // Random Y offset (20% to 80% of the content container height, relative to the main container)
+                const randomY = Math.random() * 60 + 20; 
+
+                glitchOverlay.style.left = `${randomX}%`;
+                glitchOverlay.style.top = `${randomY}%`;
+                
+                // 3. Display the glitch
+                glitchOverlay.style.display = 'inline-block';
+                glitchOverlay.classList.add('glitch-active');
+
+                // 4. Hide it quickly
+                const displayDuration = Math.random() * 100 + 50; // 50ms to 150ms
+                setTimeout(() => {
+                    glitchOverlay.classList.remove('glitch-active');
+                    glitchOverlay.style.display = 'none';
+                }, displayDuration);
+
+                // 5. Schedule the next glitch
+                const nextGlitchTime = Math.random() * 4000 + 1000; // 1 second to 5 seconds
+                setTimeout(runRandomGlitch, nextGlitchTime);
+            }
+
+            // Start the glitch loop
+            runRandomGlitch();
         });
     </script>
 </body>
