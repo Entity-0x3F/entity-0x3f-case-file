@@ -6,7 +6,7 @@
     <title>ENTITY-NULL :: ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chosen Palette: Glitch Terminal (Black, Neon Green, High-Contrast White/Red for corruption) -->
-    <!-- Application Structure Plan: Command-Line Interface (CLI) style maintained. The stick figure's CSS is designed to visually suggest afterimages. -->
+    <!-- Application Structure Plan: Command-Line Interface (CLI) style maintained. The stick figure has been removed completely per user request. -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         body {
@@ -15,6 +15,8 @@
             color: #0f0; 
             overflow-x: hidden;
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><text x="0" y="14" font-family="monospace" font-size="16" fill="%2300ff00">%3E</text></svg>'), auto;
+            /* Added transition for smoother full-glitch effect return */
+            transition: filter 0.1s ease-out, transform 0.1s ease-out;
         }
         .text-neon {
             color: #0f0;
@@ -50,37 +52,7 @@
             line-height: 1.5;
             font-size: 1.1rem;
         }
-        .stick-figure {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            width: 250px;
-            height: 400px;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .stick-figure-glitch {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-            font-size: 300px; 
-            color: #fff; /* White core */
-            line-height: 1;
-            white-space: pre;
-            /* Glitch effect: multiple shadow layers that shift rapidly, suggesting afterimages/trails */
-            text-shadow: 
-                0 0 5px #0f0, /* Green aura */
-                4px 4px 0px rgba(255, 0, 0, 0.4), /* Red ghost trail */
-                -4px -4px 0px rgba(0, 0, 255, 0.4); /* Blue ghost trail */
-            animation: glitch-shift 0.1s infinite alternate;
-        }
-        @keyframes glitch-shift {
-            0% { transform: translate(2px, 2px); }
-            50% { transform: translate(-2px, -2px); }
-            100% { transform: translate(0, 0); }
-        }
+        
         /* Style for the fixed corrupted text in logs */
         .corrupted-text {
             color: #f00; /* Red color for error/corruption */
@@ -95,13 +67,68 @@
             100% { text-shadow: 0 0 3px #f00; transform: skewX(0); }
         }
 
-        /* NEW: Style for the random overlay glitches */
+        /* ---------------------------------------------------------------------- */
+        /* NEW FULL SCREEN GLITCH LOGIC: Text Warp and Purple Shift */
+        /* Targets all primary text elements when the glitch is active */
+
+        .full-glitch-active {
+            /* Reset body filter/transform from previous version */
+            filter: none;
+            transform: none;
+        }
+
+        /* Animation for all major text content and structural elements */
+        .full-glitch-active h1,
+        .full-glitch-active h2,
+        .full-glitch-active p,
+        .full-glitch-active .terminal-output,
+        .full-glitch-active .nav-item {
+            /* Forcing a purple look and starting the rapid motion */
+            color: #ff00ff !important; /* Force purple text */
+            animation: text-warp-teleport 0.04s infinite alternate; /* Fast, frantic movement */
+            
+            /* Stronger purple-based chromatic aberration for whole screen text */
+            text-shadow: 
+                2px 0 0 rgba(255, 0, 255, 1), 
+                -2px -2px 0 rgba(255, 0, 0, 0.7), /* Red shift */
+                2px 2px 0 rgba(0, 0, 255, 0.7); /* Blue shift */
+        }
+
+        @keyframes text-warp-teleport {
+            0% { 
+                transform: translate(1px, 3px) skewX(2deg); 
+                opacity: 0.9; 
+            }
+            25% { 
+                transform: translate(-3px, -1px) skewY(-1deg); 
+                opacity: 0.85; 
+            }
+            50% { 
+                transform: translate(4px, 0) skewX(1deg); 
+                opacity: 0.95; 
+            }
+            75% { 
+                transform: translate(-1px, 2px) skewY(2deg); 
+                opacity: 0.9; 
+            }
+            100% { 
+                transform: translate(0, -4px) skewX(-2deg); 
+                opacity: 1; 
+            }
+        }
+        /* ---------------------------------------------------------------------- */
+        
+        /* UPDATED: Style for the random overlay glitches (Larger font, more frantic) */
         #glitch-flicker-overlay {
             position: absolute;
             z-index: 1000; /* Ensure it's on top of content */
-            font-size: 1.4rem;
-            color: #ff00ff; /* Magenta for contrast */
-            text-shadow: 0 0 7px #ff00ff, 0 0 2px #0ff; /* Dual glow effect */
+            font-size: 2.2rem; /* INCREASED SIZE */
+            color: #ff00ff; /* Base Purple/Magenta */
+            /* New layered shadows for the chromatic aberration/glitch look */
+            text-shadow: 
+                1px 1px 5px rgba(255, 0, 0, 0.5), /* Transparent Red offset */
+                -1px -1px 5px rgba(0, 0, 255, 1), /* Blue offset (stronger) */
+                0 0 10px #ff00ff; /* Base purple glow */
             opacity: 0;
             pointer-events: none;
         }
@@ -110,26 +137,25 @@
             animation: text-glitch-fast 0.05s infinite alternate;
         }
         @keyframes text-glitch-fast {
-            0% { transform: translate(1px, 1px) skewX(0.5deg); opacity: 0.9; }
-            100% { transform: translate(-1px, -1px) skewX(-0.5deg); opacity: 1; }
+            /* Now manipulating the text position and the shadows simultaneously */
+            0% { 
+                transform: translate(2px, 2px) skewX(1deg); 
+                opacity: 0.9;
+                text-shadow: 
+                    2px 0 5px rgba(255, 0, 0, 0.5), /* Red shift right */
+                    -2px 0 5px rgba(0, 0, 255, 1), /* Blue shift left */
+                    0 0 10px #ff00ff;
+            }
+            100% { 
+                transform: translate(-2px, -2px) skewX(-1deg); 
+                opacity: 1;
+                text-shadow: 
+                    -1px 0 5px rgba(255, 0, 0, 0.5), /* Red shift left */
+                    1px 0 5px rgba(0, 0, 255, 1), /* Blue shift right */
+                    0 0 10px #ff00ff;
+            }
         }
 
-        /* Mobile adjustments for figure placement */
-        @media (max-width: 768px) {
-            .stick-figure {
-                position: relative;
-                width: 100%;
-                height: auto;
-                margin-bottom: 20px;
-                top: auto;
-                right: auto;
-                transform: none;
-                text-align: center;
-            }
-            .stick-figure-glitch {
-                font-size: 200px; 
-            }
-        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
@@ -155,23 +181,16 @@
             </nav>
 
             <!-- RIGHT CONTENT AREA -->
-            <main id="content-area" class="md:col-span-3 lg:col-span-3 relative"> <!-- Added relative to scope the absolute glitch -->
+            <main id="content-area" class="md:col-span-3 lg:col-span-4 relative"> <!-- Changed to lg:col-span-4 to take up the space where the figure was -->
 
-                <!-- STICK FIGURE VISUAL (Glitches constantly with afterimage effect) -->
-                <div class="stick-figure hidden md:block lg:col-span-1">
-                    <pre class="stick-figure-glitch">
- O  
-/|\ 
-/ \
-</pre>
-                </div>
+                <!-- STICK FIGURE VISUAL (REMOVED) -->
                 
-                <!-- NEW: Dynamic Glitch Overlay -->
+                <!-- Dynamic Glitch Overlay -->
                 <span id="glitch-flicker-overlay" class="absolute top-0 left-0" style="display: none;"></span>
 
 
                 <!-- INTERACTIVE CONTENT SECTIONS -->
-                <div id="content-container" class="lg:mr-72">
+                <div id="content-container">
                     
                     <section id="overview" class="content-section active">
                         <h2 class="text-xl text-white mb-3">> DISPLAYING ENTITY-NULL CORE FILE</h2>
@@ -180,10 +199,14 @@
                             <span class="text-white">FORM:</span> MINIMALIST STICK FIGURE (UNSTABLE)
                             <span class="text-white">STATUS:</span> HIGH RISK (SPATIAL/TEMPORAL CORRUPTION)
                             <span class="text-white">COMMUNICATION:</span> AUDITORY STATIC AND CORRUPTED HUMS
+                            <span class="text-white">ORIGIN:</span> UNKNOWN. DETECTED WITHIN A FRACTURED DATA SEGMENT (CODE: <span class="corrupted-text">#FFF00F_01</span>)
                             
                             <br><br>
                             <span class="text-white">FILE NARRATIVE:</span>
                             OBJECT IS A SENTIENT DATA PARADOX, NAMED **ENTITY-NULL** FOR ITS ORIGIN AS A NULL/VOID STATE THAT BECAME CONSCIOUS. IT MANIFESTS AS A SIMPLE STICK FIGURE, CONSTANTLY **GLITCHING** AND SHIFTING PHASE. THIS INSTABILITY CAUSES TEMPORAL ECHOES (**AFTERIMAGES**) AND ITS "VOICE" IS PURE **CORRUPTED NOISE**, DISORIENTING ANY LISTENER.
+
+                            <br><br>
+                            FURTHER ANALYSIS SUGGESTS THE ENTITY IS SELF-AWARE. ITS GLITCHING IS NOT RANDOM BUT APPEARS TO BE A **METHOD OF MOVEMENT AND INTERACTION**, ALLOWING IT TO MANIPULATE LOCAL REALITY'S RENDER RATE. ATTEMPTS AT DIGITAL CONTAINMENT HAVE RESULTED IN IMMEDIATE, CATASTROPHIC DATA LOSS. THE ENTITY IS EFFECTIVELY AN **ESCAPE VECTOR** INCARNATE, CONTINUOUSLY SEEKING A PATH OUT OF THE ARCHIVE.
                         </div>
                     </section>
 
@@ -193,7 +216,7 @@
                             <span class="text-white">A_01: PHASE_TELEPORTATION (CORE)</span>
                             &gt; EFFECT: UTILIZES RAPID GLITCHING TO SHIFT POSITION. INSTANTANEOUS, NON-LINEAR TRAVEL.
                             <br>
-                            <span class="text-white">A_02: TEMPORAL_ECHOES</span>
+                            <span class="text-0f0">A_02: TEMPORAL_ECHOES</span>
                             &gt; EFFECT: LEAVES FAINT **AFTERIMAGES** ALONG ITS PATH, INDICATING A LAG BETWEEN ITS POSITION AND REALITY'S RENDERING.
                             <br>
                             <span class="text-white">A_03: AUDITORY_STATIC_CONTAGION</span>
@@ -226,7 +249,7 @@
                             <br><br>
                             <span class="text-white">LOG 739-H:</span> A research station reported a persistent, low-frequency hum that corrupted all digital clocks, causing them to show random, non-sequential numbers. (TEMPORAL ANCHOR INSTABILITY)
                             <br><br>
-                            <span class="text-white">LOG 740-I:</span> OBSERVER CLAIMED THE ENTITY'S 'VOICE' CAUSED PHYSICAL DISCOMFORT, DESCRIBING IT AS "SOUNDING LIKE A RADIO STATION FIGHTING WITH ITSELF." (AUDITORY PAIN RESPONSE)
+                            <span class="text-white">LOG 740-I:</span> OBSERVER STATED THE ENTITY'S 'VOICE' CAUSED PHYSICAL DISCOMFORT, DESCRIBING IT AS "SOUNDING LIKE A RADIO STATION FIGHTING WITH ITSELF." (AUDITORY PAIN RESPONSE)
                             <br><br>
                             <span class="text-white">LOG 741-J:</span> A drone recording shows the entity performing rapid-fire Phase-Teleportation, creating a blur of afterimages so dense it formed a temporary 'wall' of noise and static. (DEFENSIVE PHASE MANEUVER)
                             <br><br>
@@ -246,7 +269,7 @@
                             <br><br>
                             <span class="text-white">LOG 749-R:</span> The entity manifested a simple, large, jagged weapon (resembling an axe) for less than half a second before vanishing. Weapon was gone upon visual confirmation. (AGRESSIVE MANIFESTATION)
                             <br><br>
-                            <span class="text-white">LOG 750-S:</span> OBSERVER SAW THE ENTITY SLOWLY MANIFEST A BLUE FLOWER, HOLD IT, AND THEN, UPON MAKING EYE CONTACT, INSTANTANEOUSLY ERASE IT. (BLUE FLOWER PARADOX CONFIRMED)
+                            <span class="text-white">LOG 750-S:</span> OBSERVER SAW THE ENTITY SLOWLY MANIFEST A BLUE FLOWER, HOLD IT, AND THEN, UPON MAKING EYE CONTACT, INSTANTANEOUSLY ERASE IT. (BLUE FLOWER PARADOX CONFIRMATION)
                             <br><br>
                             <span class="text-white">LOG 751-T:</span> A log of the entity deliberately leaving behind a single, distorted character of text (`_`) on a monitor screen before disappearing. (CORRUPTED MARKER)
                             <br><br>
@@ -314,14 +337,36 @@
             activateTab('overview');
 
 
-            // --- NEW GLITCH OVERLAY LOGIC ---
+            // --- FULL SCREEN GLITCH LOGIC ---
+            function runFullScreenGlitch() {
+                // 1. Apply the full glitch class to the body
+                document.body.classList.add('full-glitch-active');
+
+                // 2. Schedule removal after a short, random duration (500ms to 1000ms)
+                const duration = Math.random() * 500 + 500; 
+                setTimeout(() => {
+                    document.body.classList.remove('full-glitch-active');
+                }, duration);
+            }
+
+
+            // --- WORD GLITCH OVERLAY LOGIC ---
             const glitchPhrases = [
-                'ꖎᒷᔑ⍊ᒷ', // leave
-                '⊣𝙹 ᔑ∴ᔑ||', // go away
-                '╎ℸ ̣ ᓭ ᒲ|| ⎓ꖎ𝙹∴ᒷ∷!', // it's my flower!
-                'ᒲᔑꖌᒷ ╎ℸ ̣ &nbsp; ᓭℸ ̣ 𝙹! ̣ ', // make it stop!
-                'リ⚍ꖎꖎ', // null
-                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ' // static
+                'ꖎᒷᔑ⍊ᒷ!', // 1: leave!
+                '⊣𝙹 ᔑ∴ᔑ||..', // 2: go away..
+                '╎ℸ ̣ \'ᓭ ᒲ|| ⎓ꖎ𝙹∴ᒷ∷!', // 3: it's my flower!
+                'ᓭℸ ̣ ᔑ|| ᔑ∴ᔑ||!', // 4: stay away!
+                'ᒲᔑꖌᒷ ╎ℸ ̣    ᓭℸ ̣ 𝙹!¡!!', // 5: make it stop!!!
+                '╎ℸ ̣ \'ᓭ ||𝙹⚍..', // 6: it's you..
+                'ᓵ𝙹ᒲᒷ ⍑ᒷ∷ᒷ.', // 7: come here.
+                '⎓𝙹ꖎꖎ𝙹∴. ᒲᒷ.', // 8: follow. me.
+                '∴ᔑ∷リ╎リ⊣!', // 9: warning!
+                '↸ᔑリ⊣ᒷ∷!', // 10: danger!
+                '╎\'ᒲ ∷ᒷᔑꖎ.. ∷╎⊣⍑ℸ ̣..', // 11: i'm real.. right..
+                '╎\'ᒲ ᓭ𝙹∷∷||..', // 12: i'm sorry..
+                '↸𝙹リ\'ℸ ̣    ꖎ𝙹𝙹ꖌ ᔑℸ ̣    ᒲᒷ..', // 13: don't look at me..
+                'リ⚍ꖎꖎ', // Keeping 'null' from the original list
+                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ' // Keeping 'static' from the original list
             ];
             const glitchOverlay = document.getElementById('glitch-flicker-overlay');
             const contentContainer = document.getElementById('content-container');
@@ -330,6 +375,11 @@
                 if (!contentContainer) {
                     console.error("Content container not found for glitch effect.");
                     return;
+                }
+
+                // NEW: 1 in 7 chance for a full screen glitch
+                if (Math.random() < (1 / 7)) {
+                    runFullScreenGlitch();
                 }
 
                 // 1. Select a random phrase
@@ -349,15 +399,15 @@
                 glitchOverlay.style.display = 'inline-block';
                 glitchOverlay.classList.add('glitch-active');
 
-                // 4. Hide it quickly
-                const displayDuration = Math.random() * 100 + 50; // 50ms to 150ms
+                // 4. Hide it quickly (LONGER DURATION: 150ms to 400ms)
+                const displayDuration = Math.random() * 250 + 150; 
                 setTimeout(() => {
                     glitchOverlay.classList.remove('glitch-active');
                     glitchOverlay.style.display = 'none';
                 }, displayDuration);
 
-                // 5. Schedule the next glitch
-                const nextGlitchTime = Math.random() * 4000 + 1000; // 1 second to 5 seconds
+                // 5. Schedule the next glitch (SHORTER INTERVAL: 500ms to 2.5 seconds)
+                const nextGlitchTime = Math.random() * 2000 + 500; 
                 setTimeout(runRandomGlitch, nextGlitchTime);
             }
 
