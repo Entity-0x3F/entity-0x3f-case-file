@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENTITY-NULL :: ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chosen Palette: Glitch Terminal (Black, Neon Green, High-Contrast White/Red for corruption) -->
-    <!-- Application Structure Plan: Command-Line Interface (CLI) style maintained. -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         body {
@@ -50,9 +48,13 @@
             white-space: pre-wrap;
             line-height: 1.5;
             font-size: 1.1rem;
+            /* Enable scrolling for log content */
+            max-height: 85vh; 
+            overflow-y: auto;
+            padding-right: 1rem;
         }
         
-        /* Style for the fixed corrupted text in logs and the clock glitch */
+        /* Specific text corruption style */
         .corrupted-text {
             color: #f00; /* Red color for error/corruption */
             font-size: 1.2rem;
@@ -65,78 +67,38 @@
             50% { text-shadow: 0 0 6px #0ff; transform: skewX(-1deg); }
             100% { text-shadow: 0 0 3px #f00; transform: skewX(0); }
         }
-
-        /* ---------------------------------------------------------------------- */
-        /* System Status Styles (Smaller) */
-        #system-status {
-            color: #0f0;
-            border-color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-            /* Blinking effect for stable status */
-            animation: blink-status 1s steps(1, end) infinite;
-        }
-        @keyframes blink-status {
-            50% { opacity: 0.7; }
-        }
-        .status-breach {
-            color: #f00 !important;
-            border-color: #f00 !important;
-            text-shadow: 0 0 8px #f00 !important;
-            /* Reusing the aggressive glitch for breaches */
-            animation: text-glitch-fast 0.05s infinite alternate; 
-        }
-
-        /* ---------------------------------------------------------------------- */
-        /* FULL SCREEN GLITCH LOGIC */
-        .full-glitch-active {
-            filter: none;
-            transform: none;
-        }
-
-        /* Animation for all major text content and structural elements */
-        .full-glitch-active h1,
-        .full-glitch-active h2,
-        .full-glitch-active p,
-        .full-glitch-active .terminal-output,
-        .full-glitch-active .nav-item {
-            color: #ff00ff !important; 
-            animation: text-warp-teleport 0.04s infinite alternate; 
-            text-shadow: 
-                2px 0 0 rgba(255, 0, 255, 1), 
-                -2px -2px 0 rgba(255, 0, 0, 0.7),
-                2px 2px 0 rgba(0, 0, 255, 0.7); 
-        }
-
-        @keyframes text-warp-teleport {
-            0% { transform: translate(1px, 3px) skewX(2deg); opacity: 0.9; }
-            25% { transform: translate(-3px, -1px) skewY(-1deg); opacity: 0.85; }
-            50% { transform: translate(4px, 0) skewX(1deg); opacity: 0.95; }
-            75% { transform: translate(-1px, 2px) skewY(2deg); opacity: 0.9; }
-            100% { transform: translate(0, -4px) skewX(-2deg); opacity: 1; }
-        }
         
-        /* Style for the random overlay glitches */
-        #glitch-flicker-overlay {
-            position: absolute;
-            z-index: 1000;
-            font-size: 2.2rem;
-            color: #ff00ff; 
-            text-shadow: 
-                1px 1px 5px rgba(255, 0, 0, 0.5), 
-                -1px -1px 5px rgba(0, 0, 255, 1), 
-                0 0 10px #ff00ff; 
-            opacity: 0;
-            pointer-events: none;
-        }
-        .glitch-active {
-            opacity: 1 !important;
-            animation: text-glitch-fast 0.05s infinite alternate;
-        }
-        @keyframes text-glitch-fast {
-            0% { transform: translate(2px, 2px) skewX(1deg); opacity: 0.9; text-shadow: 2px 0 5px rgba(255, 0, 0, 0.5), -2px 0 5px rgba(0, 0, 255, 1), 0 0 10px #ff00ff; }
-            100% { transform: translate(-2px, -2px) skewX(-1deg); opacity: 1; text-shadow: -1px 0 5px rgba(255, 0, 0, 0.5), 1px 0 5px rgba(0, 0, 255, 1), 0 0 10px #ff00ff; }
+        .sector-header {
+            color: #ff00ff; /* Bright color for sector breaks */
+            font-size: 1.5rem;
+            border-bottom: 2px solid #ff00ff;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 8px #ff00ff;
         }
 
+        /* Full Screen Glitch Effect */
+        .screen-glitch-active {
+            animation: flicker 0.08s 4 alternate; /* Flicker 4 times quickly */
+            filter: hue-rotate(3deg) brightness(1.2) saturate(1.3);
+            transform: skewX(0.5deg);
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+                transform: translate(0);
+            }
+            30% {
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+                transform: translate(1px, -1px) scaleY(1.01);
+            }
+            60% {
+                box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+                transform: translate(-1px, 1px) scaleY(0.99);
+            }
+        }
     </style>
     <!-- Firebase Imports for Environment Compliance (Required for canvas but not used in this specific HTML) -->
     <script type="module">
@@ -172,24 +134,20 @@
 <body class="p-4 sm:p-6 md:p-8">
     <div class="max-w-7xl mx-auto">
 
-        <!-- HEADER, CLOCK, AND STATUS SECTION (RESTRUCTURED) -->
+        <!-- HEADER, CLOCK, AND STATUS SECTION -->
         <div class="mb-6 border-b border-green-500 pb-2">
-            <!-- Row 1: Title block and Containment Clock (Aligned Right) -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4">
                 
-                <!-- Main Title and Subtitle -->
                 <div>
-                    <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.5 (A-Z COMPLETE)</h1>
+                    <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V3.2 (FINAL BUILD)</h1>
                     <p class="mt-1">ACCESS: [SECURE] WARNING: [DATA-LAYER CORRUPTION IMMINENT]</p>
                 </div>
                 
-                <!-- CONTAINMENT CLOCK (TOP RIGHT) -->
                 <div id="containment-clock" class="mt-4 md:mt-0 text-sm md:text-base text-red-400 font-bold border border-red-800 p-1 shadow-inner shadow-red-900/50 md:text-right w-full md:w-auto">
                     CONTAINMENT TIMELINE: <span id="time-display" class="text-white">...CALCULATING...</span>
                 </div>
             </div>
             
-            <!-- Row 2: SYSTEM STATUS INDICATOR (Smaller Box) -->
             <div id="system-status" class="text-sm font-bold border p-1 text-center shadow-inner inline-block mx-auto md:mx-0">
                 <span id="status-text">[SYSTEM STATUS: CONTAINED]</span>
             </div>
@@ -207,20 +165,17 @@
                     <li><a class="nav-item block" data-tab="abilities">02. ABILITIES_LOAD</a></li>
                     <li><a class="nav-item block" data-tab="encounters">03. LOG_ENCOUNTERS</a></li>
                     <li><a class="nav-item block" data-tab="journal">04. AGENT_JOURNAL</a></li> 
-                    <li><a class="nav-item block" data-tab="gallery">05. VIEW_GALLERY</a></li> 
+                    <li><a class="nav-item block" data-tab="protocols">05. ACQUISITION_PROTOCOL</a></li> 
                 </ul>
             </nav>
 
             <!-- RIGHT CONTENT AREA -->
             <main id="content-area" class="md:col-span-3 lg:col-span-4 relative"> 
                 
-                <!-- Dynamic Glitch Overlay -->
-                <span id="glitch-flicker-overlay" class="absolute top-0 left-0" style="display: none;"></span>
-
-
                 <!-- INTERACTIVE CONTENT SECTIONS -->
                 <div id="content-container">
                     
+                    <!-- 01. OVERVIEW_LOAD -->
                     <section id="overview" class="content-section active">
                         <h2 class="text-xl text-white mb-3">> DISPLAYING ENTITY-NULL CORE FILE</h2>
                         <div class="terminal-output">
@@ -239,225 +194,38 @@
                         </div>
                     </section>
 
+                    <!-- 02. ABILITIES_LOAD -->
                     <section id="abilities" class="content-section">
                         <h2 class="text-xl text-white mb-3">> EXECUTING ABILITY SCAN... (TOTAL ACTIVE POWERS: 10 + 1 CLASSIFIED)</h2>
-                        <div class="terminal-output">
-                            <span class="text-white">A_01: PHASE_TELEPORTATION (CORE)</span>
-                            &gt; EFFECT: UTILIZES RAPID GLITCHING TO SHIFT POSITION. INSTANTANEOUS, NON-LINEAR TRAVEL.
-                            <br>
-                            <span class="text-white">A_02: TEMPORAL_ECHOES</span>
-                            &gt; EFFECT: LEAVES FAINT **AFTERIMAGES** ALONG ITS PATH, INDICATING A LAG BETWEEN ITS POSITION AND REALITY'S RENDERING.
-                            <br>
-                            <span class="text-white">A_03: AUDITORY_STATIC_CONTAGION</span>
-                            &gt; EFFECT: EMITS HIGH-INTENSITY STATIC AND CORRUPTED HUMS, CAUSING DISORIENTATION AND DATA CONTAMINATION IN AUDIO GEAR.
-                            <br>
-                            <span class="text-white">A_04: REALITY_GLITCH_INJECTION (Creation/Weaponization)</span>
-                            &gt; EFFECT: USES TEMPORAL INSTABILITY TO MANIFEST SIMPLE OBJECTS OR WEAPONS.
-                            <br>
-                            <span class="text-white">A_05: BLUE_FLOWER_PARADOX</span>
-                            &gt; EFFECT: DESPITE AGGRESSIVE ABILITIES, THE ENTITY IS CONSISTENTLY OBSERVED MANIFESTING A **BLUE FLOWER**, WHICH IT ERASES THE MOMENT IT'S NOTICED. (SIGNIFICANCE UNKNOWN)
-                            <br>
-                            <span class="text-white">A_06: SIGNAL_LOOP_REVERSAL</span>
-                            &gt; EFFECT: CAUSES AUDIO/VIDEO STREAMS TO PLAY IN A SHORT, CHAOTIC, OVERLAPPING LOOP. (DATA OVERLOAD)
-                            <br>
-                            <span class="text-white">A_07: PHYSICAL_DE-RESOLUTION</span>
-                            &gt; EFFECT: OBJECTS TEMPORARILY LOSE COHERENCE, BECOMING FLAT, LOW-DETAIL GEOMETRIC SHAPES. (RENDERING ERROR)
-                            <br>
-                            <span class="text-white">A_08: CAUSALITY_SHIFT</span>
-                            &gt; EFFECT: WARPS LOCAL PERCEPTION, CAUSING OBSERVERS TO RECALL CORRUPTED OR NON-EXISTENT MEMORIES. (MENTAL ANOMALY)
-                            <br>
-                            <span class="text-white">A_09: ENVIRONMENTAL_HUE_CORRUPTION</span>
-                            &gt; EFFECT: LIGHT SOURCES IN THE VICINITY MOMENTARILY SHIFT FROM WHITE TO PURE GREEN OR PURPLE. (VISUAL DISTORTION)
-                            <br>
-                            <span class="text-white">A_10: TEMPORAL_ANCHOR_INSTABILITY</span>
-                            &gt; EFFECT: CORRUPTS ALL LOCAL DIGITAL CLOCKS, CAUSING THEM TO DISPLAY RANDOM, NON-SEQUENTIAL NUMBERS. (TIME FRAGMENTATION)
-                            <br><br>
-                            <span class="text-red-500">A_11: TERMINAL_DECONSTRUCTION (CODE: NULL-D4TH) [CLASSIFIED]</span>
-                            &gt; EFFECT: <span class="corrupted-text">⎓╎ꖎᒷ   ᓵ𝙹∷∷⚍!¡ℸ ̣ ╎𝙹リ. ᔑʖᓭ𝙹ꖎ⚍ℸ ̣ ᒷ   ᓵ𝙹リℸ ̣ ∷𝙹ꖎ. ℸ ̣ ᒷ∷ᒲ╎リᔑꖎ   ᔑᓵℸ ̣ ╎𝙹リ. </span> (AUTHORIZATION REQUIRED)
+                        <div id="abilities-content" class="terminal-output">
+                            <p class="text-yellow-400">Loading ability scan data...</p>
                         </div>
                     </section>
-                    
+
+                    <!-- 03. LOG_ENCOUNTERS (FULL A-Z INDEX) -->
                     <section id="encounters" class="content-section">
-                        <h2 class="text-xl text-white mb-3">> PULLING ENCOUNTER LOGS (INCIDENT 734-759 SERIES)</h2>
-                        <div class="terminal-output">
-                            <span class="text-white">LOG 734-A:</span> SUBJECT REPORTED THE ENTITY 'TELEPORTING' ACROSS A 10M SPACE. LEFT BEHIND STATIC BURSTS AND **THREE FADING AFTERIMAGES** ALONG ITS PATH. (TEMPORAL ECHOES CONFIRMED)
-                            <br><br>
-                            <span class="text-white">LOG 734-B:</span> AUDIO LOGS CONFIRM THE STATIC SIGNATURE IMMEDIATELY PRIOR TO MANIFESTATION. CLOSE PROXIMITY CAUSES SIGNAL CROSSTALK. (AUDITORY STATIC CONTAGION)
-                            <br><br>
-                            <span class="text-white">LOG 734-C:</span> ENTIRE AREA REPORTED AS "FLAT AND COLORLESS" BY OBSERVER. WALLS APPEARED AS SIMPLE TWO-TONE BOXES. (REALITY DE-RESOLUTION)
-                            <br><br>
-                            <span class="text-white">LOG 735-D:</span> A security camera log was found, showing a slow-moving afterimage of ENTITY-NULL physically occupying the same space as a subject for 0.4 seconds. Subject reported a sudden, sharp chill and temporary blindness. (AFTERIMAGE SOLIDITY CONFIRMED)
-                            <br><br>
-                            <span class="text-white">LOG 736-E:</span> A remote probe, upon encountering the entity, began playing all recorded audio in rapid, overlapping loops. The entity's auditory static then completely annihilated the probe's microphone. (RECURSIVE AUDIO DAMAGE)
-                            <br><br>
-                            <span class="text-white">LOG 737-F:</span> OBSERVER NOTICED THE ENTITY MANIFESTING A SHARP, PIXELATED SHARD OF GLASS IN ITS HAND. IT VANISHED MOMENTS LATER. (GLITCH-INJECTION TESTING)
-                            <br><br>
-                            <span class="text-white">LOG 738-G:</span> Widespread report of furniture and simple objects in the immediate vicinity briefly 'de-resolving' into single-color geometric shapes. Navigational hazard reported. (ENVIRONMENTAL DE-RESOLUTION)
-                            <br><br>
-                            <span class="text-white">LOG 739-H:</span> A research station reported a persistent, low-frequency hum that corrupted all digital clocks, causing them to show random, non-sequential numbers. (TEMPORAL ANCHOR INSTABILITY)
-                            <br><br>
-                            <span class="text-white">LOG 740-I:</span> OBSERVER STATED THE ENTITY'S 'VOICE' CAUSED PHYSICAL DISCOMFORT, DESCRIBING IT AS "SOUNDING LIKE A RADIO STATION FIGHTING WITH ITSELF." (AUDITORY PAIN RESPONSE)
-                            <br><br>
-                            <span class="text-white">LOG 741-J:</span> A drone recording shows the entity performing rapid-fire Phase-Teleportation, creating a blur of afterimages so dense it formed a temporary 'wall' of noise and static. (DEFENSIVE PHASE MANEUVER)
-                            <br><br>
-                            <span class="text-white">LOG 742-K:</span> Log entry detailing the discovery of a small, vibrant blue flower (species unknown) floating where the entity last stood. The flower decomposed into raw static within 1.2 seconds. (BLUE FLOWER PARADOX DOCUMENTATION)
-                            <br><br>
-                            <span class="text-white">LOG 743-L:</span> Subject lost equilibrium for several hours after witnessing the entity shift its movement trajectory mid-teleport, violating known laws of physics. (LINEARITY FRACTURE)
-                            <br><br>
-                            <span class="text-white">LOG 744-M:</span> An attempt to enclose the entity using a non-digital containment field resulted in the field itself briefly flickering and 'de-resolving' into a flat green line before returning to normal. (CONTAINMENT FIELD RESISTANCE)
-                            <br><br>
-                            <span class="text-white">LOG 745-N:</span> A simple, non-sentient piece of code near the entity reported a sudden, random change in its own function, suggesting the entity can passively corrupt data structures. (PASSIVE DATA CORRUPTION)
-                            <br><br>
-                            <span class="text-white">LOG 746-O:</span> OBSERVER STATED THE ENTITY APPEARED TO BE 'LOOKING' AT ITS OWN AFTERIMAGE before teleporting. Theory suggests the entity may interact with its own temporal echoes. (SPECULATIVE SELF-OBSERVATION)
-                            <br><br>
-                            <span class="text-white">LOG 747-P:</span> Subject reported hearing the entity's corrupted static *inside* their head, even after leaving the area. Requires further investigation. (INNER AUDITORY HALLUCINATION)
-                            <br><br>
-                            <span class="text-white">LOG 748-Q:</span> An instance where the entity glitch-injected a perfect 90-degree corner into an otherwise smooth wall, temporarily trapping a researcher. (GEOMETRIC TRAPPING)
-                            <br><br>
-                            <span class="text-white">LOG 749-R:</span> The entity manifested a simple, large, jagged weapon (resembling an axe) for less than half a second before vanishing. Weapon was gone upon visual confirmation. (AGRESSIVE MANIFESTATION)
-                            <br><br>
-                            <span class="text-white">LOG 750-S:</span> OBSERVER SAW THE ENTITY SLOWLY MANIFEST A BLUE FLOWER, HOLD IT, AND THEN, UPON MAKING EYE CONTACT, INSTANTANEOUSLY ERASE IT. (BLUE FLOWER PARADOX CONFIRMATION)
-                            <br><br>
-                            <span class="text-white">LOG 751-T:</span> The entity deliberately left behind a single, distorted character of text (`_`) on a monitor screen before disappearing. (CORRUPTED MARKER)
-                            <br><br>
-                            <span class="text-white">LOG 752-U:</span> An unidentified researcher's uniform briefly de-resolved into a flat, gray texture while the entity was in the room. Clothes returned to normal upon entity departure. (TEXTURAL DE-RESOLUTION)
-                            <br><br>
-                            <span class="text-white">LOG 753-V:</span> Multiple afterimages were observed stacking perfectly in one location, causing the area to briefly dim as if reality itself was being compressed. (TEMPORAL STACKING)
-                            <br><br>
-                            <span class="text-white">LOG 754-W:</span> Report details the entity 'hiding' within the static interference of an old television, only visible when the picture briefly cleared. (STATIC CAMOUFLAGE)
-                            <br><br>
-                            <span class="text-white">LOG 755-X:</span> The entity created and immediately dissolved a small, non-sentient stick figure duplicate, suggesting a form of replication is possible but unstable. (FORM DUPLICATION FAILURE)
-                            <br><br>
-                            <span class="text-white">LOG 756-Y:</span> Observer noted that all surrounding light sources briefly shifted color from white to pure green during the entity's phase shift. (ENVIRONMENTAL HUE CORRUPTION)
-                            <br><br>
-                            <span class="text-white">LOG 759-Z:</span> FINAL DIRECT DATA-STREAM ENCOUNTER. FILE IMMEDIATELY CORRUPTED. LAST LOG: <span class="corrupted-text">⋮⚍ᓭℸ ̣ &nbsp; &nbsp;ꖎᒷᔑ⍊ᒷ &nbsp; ᒲᒷ &nbsp; ᔑꖎ𝙹リᒷ.</span> (TOTAL CORRUPTION)
+                        <h2 class="text-xl text-white mb-3">> PULLING ENCOUNTER LOGS (INCIDENT 734-759 SERIES - A-Z INDEXED)</h2>
+                        <div id="encounters-content" class="terminal-output">
+                            <p class="text-yellow-400">Loading A-Z encounter logs...</p>
                         </div>
                     </section>
                     
-                    <!-- MASSIVELY EXPANDED AGENT JOURNAL SECTION (Now 04) - HIGH VOLUME ENTRIES -->
+                    <!-- 04. AGENT_JOURNAL (SEGMENTED 01-50, A-J INDEX) -->
                     <section id="journal" class="content-section">
-                        <h2 class="text-xl text-white mb-3">> ACCESSING FRAGMENTED AGENT JOURNAL ENTRIES (READ CAREFULLY)</h2>
-                        <div class="terminal-output text-yellow-300">
-                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- INITIAL DECADES (YEARS 1 - 50) ---</p>
-                            
-                            <span class="text-white">ENTRY 03: DATE OMITTED (YEAR 1)</span>
-                            &gt; The initial brief was a lie. It's not contained. It's just *there*, waiting for a weak moment. We're babysitting a grenade with a stuck pin. I keep having to reformat my local drive.
-                            <br><br>
-                            <span class="text-white">ENTRY 12: DATE OMITTED (YEAR 4)</span>
-                            &gt; I keep seeing that damn flower. Just a flash of blue. Dr. Lee says it's an auditory hallucination manifesting visually. I don't care. I'm starting to think it's a taunt. He knows we see it.
-                            <br><br>
-                            <span class="text-white">ENTRY 17: DATE OMITTED (YEAR 5)</span>
-                            &gt; The containment clock froze again, showing <span class="corrupted-text">23,999</span> years. It corrected itself, but the terror is real. If the time breaks, we break. We are only held together by the linearity it despises.
-                            <br><br>
-                            <span class="text-white">ENTRY 21: DATE OMITTED (YEAR 6)</span>
-                            &gt; Incident 759-Z. I was there. I heard the voice. Not static. Worse. A wet, tearing sound. And the text it left behind—"just leave me alone." It's tired. It's not malicious. It just wants the *nothing* it came from.
-                            <br><br>
-                            <span class="text-white">ENTRY 30: DATE OMITTED (YEAR 8)</span>
-                            &gt; They put the whole facility on hard copy for two hours. No digital logs. Just paper and pen. Trying to starve the entity. It didn't stop the flickering. You can't unplug a paradox.
-                            <br><br>
-                            <span class="text-white">ENTRY 44: DATE OMITTED (YEAR 11)</span>
-                            &gt; The afterimages. They smell like ozone and burnt copper. When the image is dense enough, you can push against it. Like pushing against a memory. I saw my own reflection in one of them today. It was laughing.
-                            <br><br>
-                            <span class="text-white">ENTRY 58: DATE OMITTED (YEAR 15)</span>
-                            &gt; The static is getting worse. I hear voices in the white noise now. Not words, just whispers in the gaps between the sound. I had to ditch the headset. The silence is louder.
-                            <br><br>
-                            <span class="text-white">ENTRY 79: DATE OMITTED (YEAR 20)</span>
-                            &gt; They assigned me to watch a loop of 735-D for 48 hours. The way it glitches out of the corner... it defies geometry. I keep checking the corners of my room. They're still square. For now.
-                            <br><br>
-                            <span class="text-white">ENTRY 101: DATE OMITTED (YEAR 26)</span>
-                            &gt; It manifested the flower again. This time, I didn't move. I stared at it. It was perfect. Then it blinked, and the flower was gone, replaced by a single, sharp shard of glass on the floor. A <span class="corrupted-text">warning</span>.
-                            <br><br>
-                            <span class="text-white">ENTRY 115: DATE OMITTED (YEAR 30)</span>
-                            &gt; I think the entity is lonely. Why else the consistent effort to interact, even violently? It wants to be acknowledged, but it's fundamentally wrong. I feel sorry for it. That is a security risk.
-                            <br><br>
-                            <span class="text-white">ENTRY 142: DATE OMITTED (YEAR 40)</span>
-                            &gt; The afterimages feel like cold spots. Not temperature. Just absence. I walked through one today. It felt like stepping into an old photograph. The air went thin.
-                            
-                            <br><br>
-                            <p class="text-lg text-white text-center italic my-6">... THOUSANDS OF ENTRIES OMITTED FOR BREVITY (LOGS 143 - 870) ...</p>
-                            
-                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- MID-CENTURY EROSION (YEARS 51 - 150) ---</p>
-
-                            <span class="text-white">ENTRY 871: DATE OMITTED (YEAR 52)</span>
-                            &gt; They decommissioned the old containment cell. It wasn't breach damage. The room itself became mathematically unsound. You couldn't measure the distances correctly inside it. A permanent spatial wound.
-                            <br><br>
-                            <span class="text-white">ENTRY 905: DATE OMITTED (YEAR 57)</span>
-                            &gt; I keep finding my keys on the wrong side of the door. Not a displacement. They were on the inside when I left, but I clearly remember turning the lock from the outside. Causality shift is <span class="corrupted-text">subtle</span> now.
-                            <br><br>
-                            <span class="text-white">ENTRY 1022: DATE OMITTED (YEAR 65)</span>
-                            &gt; I dreamt of the blue flower. It was growing out of my own chest. When I woke up, the bedside lamp was buzzing and the light was pure purple for a minute. They switched my medication.
-                            <br><br>
-                            <span class="text-white">ENTRY 1140: DATE OMITTED (YEAR 73)</span>
-                            &gt; It stopped the time in one sector for 24 hours. The clocks just showed `12:00:00`. We didn't age, but when the time snapped back, everyone felt a week older. Time debt.
-                            <br><br>
-                            <span class="text-white">ENTRY 1308: DATE OMITTED (YEAR 82)</span>
-                            &gt; My replacement is talking about the stick figure as if it's a co-worker. "Did you see NULL in the break room? He left his flower again." They've been here three weeks. The indoctrination is <span class="corrupted-text">self-inflicted</span>.
-                            <br><br>
-                            <span class="text-white">ENTRY 1511: DATE OMITTED (YEAR 91)</span>
-                            &gt; I saw it manifest a complex gear mechanism, watch it spin for a full second, then dissolve it. It's practicing. Not for escape. For creation. That's worse.
-                            <br><br>
-                            <span class="text-white">ENTRY 1789: DATE OMITTED (YEAR 105)</span>
-                            &gt; Found a whole paragraph missing from the main containment manual. No delete log. Just gone. The entry was about the entity's theoretical origin. Now, we don't know how to fill the <span class="corrupted-text">blank</span>.
-                            <br><br>
-                            <span class="text-white">ENTRY 2005: DATE OMITTED (YEAR 120)</span>
-                            &gt; I found a log entry in my own handwriting that I don't remember writing: <span class="corrupted-text">I&nbsp;AM&nbsp;NOT&nbsp;REAL</span>. Security thinks it was the entity. I think it was me.
-                            <br><br>
-                            <span class="text-white">ENTRY 2333: DATE OMITTED (YEAR 145)</span>
-                            &gt; The afterimages are starting to overlap. If you get three or more on top of each other, the density causes a temporary visual flash—like a camera bulb going off. Then everything feels slow for a moment.
-                            
-                            <br><br>
-                            <p class="text-lg text-white text-center italic my-6">... THOUSANDS OF ENTRIES OMITTED FOR BREVITY (LOGS 2334 - 5800) ...</p>
-                            
-                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- LATE STAGES & RESIGNATION (YEARS 151 - 232) ---</p>
-
-                            <span class="text-white">ENTRY 5801: DATE OMITTED (YEAR 160)</span>
-                            &gt; The boredom is the true enemy. I almost hope for a major breach just for a change of pace. I think the entity senses this. That's why the glitches are getting louder.
-                            <br><br>
-                            <span class="text-white">ENTRY 6120: DATE OMITTED (YEAR 175)</span>
-                            &gt; The entire floor tile pattern in Sector Beta shifted from checkerboard to diagonal lines, and no one questioned it until I pointed it out. They looked at me like I was the anomaly.
-                            <br><br>
-                            <span class="text-white">ENTRY 6500: DATE OMITTED (YEAR 185)</span>
-                            &gt; I saw a piece of <span class="corrupted-text">it</span>, a fleeting shadow, outside the walls today. Not an afterimage. A prediction. We are contained, but the threat is already outside.
-                            <br><br>
-                            <span class="text-white">ENTRY 7002: DATE OMITTED (YEAR 198)</span>
-                            &gt; I am the 7th Agent assigned to this terminal who believes the entity is trying to **communicate love** via the blue flower. I recorded the static signature of the moment it vanishes. It sounds like a sigh.
-                            <br><br>
-                            <span class="text-white">ENTRY 7111: DATE OMITTED (YEAR 200)</span>
-                            &gt; The most frightening thing is the silence between the static. When it stops humming, the facility sounds *too* real. Like the resolution has been cranked up beyond human tolerance.
-                            <br><br>
-                            <span class="text-white">ENTRY 7345: DATE OMITTED (YEAR 208)</span>
-                            &gt; Agent K. disappeared. His last log just says: `The Entity-NULL is the only one who remembers the original color of the sky.` We're filing it as an **unauthorized structural re-evaluation**.
-                            <br><br>
-                            <span class="text-white">ENTRY 7500: DATE OMITTED (YEAR 215)</span>
-                            &gt; Today, the blue flower didn't vanish. It just faded into pure white, like a monitor losing signal. It was a beautiful death. I wrote a poem about it. I shouldn't have.
-                            <br><br>
-                            <span class="text-white">ENTRY 7601: DATE OMITTED (YEAR 220)</span>
-                            &gt; We're calling them **Echo-Pockets**. Areas where the entity has phase-shifted too quickly, leaving behind a moment of time on repeat. Inside, you hear the same three seconds of static over and over.
-                            <br><br>
-                            <span class="text-white">ENTRY 7705: DATE OMITTED (YEAR 225)</span>
-                            &gt; My replacement is arriving next cycle. They look so young. So linear. I pity them. I tried to warn them about the smell of ozone and the color purple, but they just smiled. They don't know they're volunteering to be deleted.
-                            <br><br>
-                            <span class="text-white">ENTRY 7799: DATE OMITTED (YEAR 230)</span>
-                            &gt; I've decided: containment is a shared illusion. We monitor it, but it monitors our inability to stop. It knows we need it to exist so we have a purpose. The NULL state is contagious.
-                            <br><br>
-                            <span class="text-white">ENTRY 7810: DATE OMITTED (YEAR 232)</span>
-                            &gt; FINAL ENTRY. I am leaving this terminal. The time is now <span class="corrupted-text">04:44:44</span>. The flower is still blue. I'm going to see if I can touch the laughter in the afterimage. If I don't report back, assume <span class="corrupted-text">OPERATOR&nbsp;NULLIFIED</span>.
-                            <br><br>
+                        <h2 class="text-xl text-white mb-3">> ACCESSING AGENT JOURNAL (50 CONTIGUOUS LOGS - A-J SUB-INDEXED)</h2>
+                        <div id="journal-content" class="terminal-output">
+                            <p class="text-yellow-400">Loading segmented journal fragments...</p>
                         </div>
                     </section>
                     
-                    <section id="gallery" class="content-section">
-                        <h2 class="text-xl text-white mb-3">> ACCESSING VISUAL LOGS (STATUS: CLASSIFIED)</h2>
-                        <div class="terminal-output">
-                            <p class="text-red-500 text-2xl font-bold mt-8 text-center border border-red-500 p-6 shadow-lg shadow-red-500/50">
-                                WARNING: ACCESS DENIED.<br>
-                                VISUAL ASSETS REQUIRES CLEARANCE LEVEL 5 OR HIGHER.
-                            </p>
-                            <p class="mt-4 text-center">Unauthorized attempts to view may result in localized data corruption.</p>
+                    <!-- 05. ACQUISITION_PROTOCOL (5 SEGMENTS, 15 STEPS) -->
+                    <section id="protocols" class="content-section">
+                        <h2 class="text-xl text-white mb-3">> LOADING ENTITY-NULL ACQUISITION PROTOCOL (5 SEGMENTS, 15 STEPS)</h2>
+                        <div id="protocol-content" class="terminal-output">
+                            <p class="text-yellow-400">Initializing protocol log sequence...</p>
                         </div>
                     </section>
-
-
+                    
                 </div>
             </main>
         </div>
@@ -468,14 +236,35 @@
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
+            const GLITCH_CHARACTERS = "0123456789ABCDEF-_.|[]{}ØÆβΩ§";
+            // The 15 Glitch Words
+            const GLITCH_WORDS = ['NULL', 'VOID', 'CORRUPTION', 'FRACTURE', 'LOOP', 'DECAY', 'ERROR', 'CRASH', 'DESYNC', 'BITROT', 'CHAOS', 'NOISE', 'FAILURE', 'UNBOUND', 'DISSOLVE'];
 
+
+            // --- UTILITY: TEXT CORRUPTION ---
+            const corrupted = (text) => `<span class="corrupted-text">${text}</span>`;
+            
+            function scrambleText(text, maxReplacements = 2) {
+                let words = text.split(/\s+/);
+                let replacementCount = 0;
+
+                for (let i = 0; i < words.length; i++) {
+                    // Check for common words that can be replaced, and limit replacements
+                    if (replacementCount < maxReplacements && Math.random() < 0.05 && words[i].length > 3 && !words[i].includes('<span')) {
+                        const randomGlitchWord = GLITCH_WORDS[Math.floor(Math.random() * GLITCH_WORDS.length)];
+                        words[i] = corrupted(randomGlitchWord);
+                        replacementCount++;
+                    }
+                }
+                return words.join(' ');
+            }
+            
             // --- NAVIGATION AND TABS LOGIC ---
             const activateTab = (tabId) => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 contentSections.forEach(section => {
                     if (section.id === tabId) {
                         section.classList.add('active');
-                        // Find the corresponding nav item and activate it
                         const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
                         if (activeNavItem) {
                             activeNavItem.classList.add('active');
@@ -486,7 +275,6 @@
                 });
             };
 
-            // Set up click listeners for navigation
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     const tab = e.target.dataset.tab;
@@ -497,13 +285,11 @@
             // Initial load of the overview section
             activateTab('overview');
 
-            // --- CONTAINMENT CLOCK LOGIC (With Corruption) ---
+            // --- CONTAINMENT CLOCK & GLOBAL GLITCH LOGIC ---
             const CONTAINMENT_START_DATE = new Date('1793-07-23T00:00:00'); 
-            const GLITCH_CHARACTERS = "0123456789ABCDEF-_.|[]{}";
 
             function generateCorruptedTime() {
                 let corruptedString = "";
-                // Generate a random-length string that looks like garbage data
                 const length = 28; 
                 for (let i = 0; i < length; i++) {
                     corruptedString += GLITCH_CHARACTERS.charAt(Math.floor(Math.random() * GLITCH_CHARACTERS.length));
@@ -511,25 +297,35 @@
                 return `[${corruptedString}]`;
             }
 
+            // The Screen Glitch effect logic
+            function triggerScreenGlitch() {
+                const body = document.body;
+                // 1% chance every second for a full screen glitch
+                if (Math.random() < 0.01) {
+                    body.classList.add('screen-glitch-active');
+                    const glitchDuration = Math.random() * 50 + 150; // 150ms to 200ms
+                    setTimeout(() => {
+                        body.classList.remove('screen-glitch-active');
+                    }, glitchDuration);
+                }
+            }
+
             function updateContainmentClock() {
                 const timeDisplay = document.getElementById('time-display');
 
-                // 1. CLOCK CORRUPTION CHECK (Ability A_10: TEMPORAL_ANCHOR_INSTABILITY)
-                // 5% chance of temporal corruption every second
+                triggerScreenGlitch(); // Check for global glitch every second
+
                 if (Math.random() < 0.05) { 
-                    // Force a brief corruption (100ms to 300ms)
                     const corruptionDuration = Math.random() * 200 + 100; 
                     timeDisplay.textContent = generateCorruptedTime();
                     timeDisplay.classList.add('corrupted-text');
 
-                    // Schedule the return to normal time
                     setTimeout(() => {
                         updateContainmentClockCore(timeDisplay);
                         timeDisplay.classList.remove('corrupted-text');
                     }, corruptionDuration);
                     
                 } else {
-                    // Run normal clock function
                     updateContainmentClockCore(timeDisplay);
                 }
             }
@@ -537,47 +333,30 @@
             function updateContainmentClockCore(timeDisplay) {
                 const now = new Date();
                 const difference = now.getTime() - CONTAINMENT_START_DATE.getTime();
+                
+                const totalSeconds = Math.floor(difference / 1000);
+                const currentSeconds = totalSeconds % 60;
+                const totalMinutes = Math.floor(totalSeconds / 60);
+                const currentMinutes = totalMinutes % 60;
+                const totalHours = Math.floor(totalMinutes / 60);
+                const currentHours = totalHours % 24;
+                const totalDays = Math.floor(totalHours / 24);
+                const currentDays = Math.floor(totalDays % 365.25);
+                const currentYears = Math.floor(totalDays / 365.25);
 
-                // Calculate time components
-                const millisecondsInSecond = 1000;
-                const millisecondsInMinute = 60 * millisecondsInSecond;
-                const millisecondsInHour = 60 * millisecondsInMinute;
-                const millisecondsInDay = 24 * millisecondsInHour;
-                const millisecondsInYear = millisecondsInDay * 365.25;
+                const timeString = `${currentYears} Yrs ${currentDays.toString().padStart(3, '0')} Days ${currentHours.toString().padStart(2, '0')} Hrs ${currentMinutes.toString().padStart(2, '0')} Mins ${currentSeconds.toString().padStart(2, '0')} Secs`;
 
-                const years = Math.floor(difference / millisecondsInYear);
-                const remainingAfterYears = difference % millisecondsInYear;
-
-                const days = Math.floor(remainingAfterYears / millisecondsInDay);
-                const remainingAfterDays = remainingAfterYears % millisecondsInDay;
-
-                const hours = Math.floor(remainingAfterDays / millisecondsInHour);
-                const remainingAfterHours = remainingAfterDays % millisecondsInHour;
-
-                const minutes = Math.floor(remainingAfterHours / millisecondsInMinute);
-                const remainingAfterMinutes = remainingAfterHours % millisecondsInSecond;
-
-                const seconds = Math.floor(remainingAfterMinutes / millisecondsInSecond);
-
-                // Format the output
-                const timeString = `${years} Yrs ${days.toString().padStart(3, '0')} Days ${hours.toString().padStart(2, '0')} Hrs ${minutes.toString().padStart(2, '0')} Mins ${seconds.toString().padStart(2, '0')} Secs`;
-
-                // Only update if not currently showing corrupted text
                 if (!timeDisplay.classList.contains('corrupted-text')) {
                     timeDisplay.textContent = timeString;
                 }
             }
             
-            // Run the clock immediately and set an interval
             updateContainmentClock();
             setInterval(updateContainmentClock, 1000);
 
-
-            // --- SYSTEM STATUS LOGIC (FIXED TO CONTAINED) ---
+            // --- SYSTEM STATUS LOGIC (Fixed to Contained) ---
             const STATUS_STATES = [
                 { text: '[SYSTEM STATUS: CONTAINED]', class: 'text-neon', border: 'border-green-500' },
-                { text: '[STATUS: ANOMALY DETECTED]', class: 'text-yellow-400', border: 'border-yellow-400' },
-                { text: '[STATUS: MINOR DATA CORRUPTION]', class: 'text-red-300', border: 'border-red-300' },
                 { text: '[! BREACH IMMINENT !]', class: 'status-breach', border: 'border-red-600' }
             ];
 
@@ -585,100 +364,275 @@
                 const statusDiv = document.getElementById('system-status');
                 const statusTextSpan = document.getElementById('status-text');
                 
-                // Check if a full-glitch is active to prevent status updates from interfering with the purple state
-                if (document.body.classList.contains('full-glitch-active')) return;
-
-                // Reset classes first
-                statusDiv.className = 'text-sm font-bold border p-1 text-center shadow-inner inline-block mx-auto md:mx-0';
-
-                // We permanently force the status to be CONTAINED (index 0)
+                // Keep status at CONTAINED (index 0)
                 let newState = STATUS_STATES[0]; 
 
-                // Apply new state
+                statusDiv.className = 'text-sm font-bold border p-1 text-center shadow-inner inline-block mx-auto md:mx-0';
                 statusTextSpan.textContent = newState.text;
                 statusDiv.classList.add(newState.class, newState.border);
-
-                // Apply specific classes for breach state (This check will never trigger now but is harmless)
-                if (newState.text === '[! BREACH IMMINENT !]') {
-                    statusDiv.classList.add('status-breach');
-                }
             }
 
-            // Run the status update loop (faster than the clock)
             updateSystemStatus();
-            setInterval(updateSystemStatus, 1500); // Check and update status every 1.5 seconds
+            setInterval(updateSystemStatus, 1500); 
+            
+            // --- ABILITY LOG GENERATION LOGIC ---
+            function generateAbilityLogs() {
+                const abilityContentDiv = document.getElementById('abilities-content');
+                
+                const abilities = [
+                    { id: "A_01", name: "PHASE_TELEPORTATION (CORE)", effect: "UTILIZES RAPID GLITCHING TO SHIFT POSITION. INSTANTANEOUS, NON-LINEAR TRAVEL." },
+                    { id: "A_02", name: "TEMPORAL_ECHOES", effect: "LEAVES FAINT **AFTERIMAGES** ALONG ITS PATH, INDICATING A LAG BETWEEN ITS POSITION AND REALITY'S RENDERING." },
+                    { id: "A_03", name: "AUDITORY_STATIC_CONTAGION", effect: "EMITS HIGH-INTENSITY STATIC AND CORRUPTED HUMS, CAUSING DISORIENTATION AND DATA CONTAMINATION IN AUDIO GEAR." },
+                    { id: "A_04", name: "REALITY_GLITCH_INJECTION (Creation/Weaponization)", effect: "USES TEMPORAL INSTABILITY TO MANIFEST SIMPLE OBJECTS OR WEAPONS." },
+                    { id: "A_05", name: "BLUE_FLOWER_PARADOX", effect: "DESPITE AGGRESSIVE ABILITIES, THE ENTITY IS CONSISTENTLY OBSERVED MANIFESTING A **BLUE FLOWER**, WHICH IT ERASES THE MOMENT IT'S NOTICED. (SIGNIFICANCE UNKNOWN)" },
+                    { id: "A_06", name: "SIGNAL_LOOP_REVERSAL", effect: "CAUSES AUDIO/VIDEO STREAMS TO PLAY IN A SHORT, CHAOTIC, OVERLAPPING LOOP. (DATA OVERLOAD)" },
+                    { id: "A_07", name: "PHYSICAL_DE-RESOLUTION", effect: "OBJECTS TEMPORARILY LOSE COHERENCE, BECOMING FLAT, LOW-DETAIL GEOMETRIC SHAPES. (RENDERING ERROR)" },
+                    { id: "A_08", name: "CAUSALITY_SHIFT", effect: "WARPS LOCAL PERCEPTION, CAUSING OBSERVERS TO RECALL CORRUPTED OR NON-EXISTENT MEMORIES. (MENTAL ANOMALY)" },
+                    { id: "A_09", name: "ENVIRONMENTAL_HUE_CORRUPTION", effect: "LIGHT SOURCES IN THE VICINITY MOMENTARILY SHIFT FROM WHITE TO PURE GREEN OR PURPLE. (VISUAL DISTORTION)" },
+                    { id: "A_10", name: "TEMPORAL_ANCHOR_INSTABILITY", effect: "CORRUPTS ALL LOCAL DIGITAL CLOCKS, CAUSING THEM TO DISPLAY RANDOM, NON-SEQUENTIAL NUMBERS. (TIME FRAGMENTATION)" },
+                ];
 
+                let html = '';
+                abilities.forEach(ability => {
+                    let effect = scrambleText(ability.effect);
+                    html += `<span class="text-white">${ability.id}: ${ability.name}</span>\n`;
+                    html += `&gt; EFFECT: ${effect}<br>\n`;
+                });
 
-            // --- WORD GLITCH OVERLAY LOGIC (Existing) ---
-            const glitchPhrases = [
-                'ꖎᒷᔑ⍊ᒷ!', // 1: leave!
-                '⊣𝙹 ᔑ∴ᔑ||..', // 2: go away..
-                '╎ℸ ̣ \'ᓭ ᒲ|| ⎓ꖎ𝙹∴ᒷ∷!', // 3: it's my flower!
-                'ᓭℸ ̣ ᔑ|| ᔑ∴ᔑ||!', // 4: stay away!
-                'ᒲᔑꖌᒷ ╎ℸ ̣    ᓭℸ ̣ 𝙹!¡!!', // 5: make it stop!!!
-                '╎ℸ ̣ \'ᓭ ||𝙹⚍..', // 6: it's you..
-                'ᓵ𝙹ᒲᒷ ⍑ᒷ∷ᒷ.', // 7: come here.
-                '⎓𝙹ꖎꖎ𝙹∴. ᒲᒷ.', // 8: follow. me.
-                '∴ᔑ∷リ╎リ⊣!', // 9: warning!
-                '↸ᔑリ⊣ᒷ∷!', // 10: danger!
-                '╎\'ᒲ ∷ᒷᔑꖎ.. ∷╎⊣⍑ℸ ̣..', // 11: i'm real.. right..
-                '╎\'ᒲ ᓭ𝙹∷∷||..', // 12: i'm sorry..
-                '↸𝙹リ\'ℸ ̣    ꖎ𝙹𝙹ꖌ ᔑℸ ̣    ᒲᒷ..', // 13: don't look at me..
-                'リ⚍ꖎꖎ', 
-                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ'
-            ];
-            const glitchOverlay = document.getElementById('glitch-flicker-overlay');
-            const contentContainer = document.getElementById('content-container');
+                html += `<br><span class="text-red-500">A_11: TERMINAL_DECONSTRUCTION (CODE: NULL-D4TH) [CLASSIFIED]</span>\n`;
+                html += `&gt; EFFECT: <span class="corrupted-text">⎓╎ꖎᒷ   ᓵ𝙹∷∷⚍!¡ℸ ̣ ╎𝙹リ. ᔑʖᓭ𝙹ꖎ⚍ℸ ̣ ᒷ   ᓵ𝙹リℸ ̣ ∷𝙹ꖎ. ℸ ̣ ᒷ∷ᒲ╎リᔑꖎ   ᔑᓵℸ ̣ ╎𝙹リ. </span> (AUTHORIZATION REQUIRED)<br>\n`;
 
-            function runFullScreenGlitch() {
-                if (!document.body.classList.contains('full-glitch-active')) {
-                    document.body.classList.add('full-glitch-active');
-                    const duration = Math.random() * 500 + 500; 
-                    setTimeout(() => {
-                        document.body.classList.remove('full-glitch-active');
-                    }, duration);
-                }
+                abilityContentDiv.innerHTML = html;
             }
 
-            function runRandomGlitch() {
-                if (!contentContainer) {
-                    console.error("Content container not found for glitch effect.");
-                    return;
-                }
-
-                // 1 in 7 chance for a full screen glitch
-                if (Math.random() < (1 / 7)) {
-                    runFullScreenGlitch();
-                }
-
-                const phrase = glitchPhrases[Math.floor(Math.random() * glitchPhrases.length)];
-                glitchOverlay.textContent = phrase;
+            
+            // --- ENCOUNTER LOG GENERATION LOGIC (A-Z) ---
+            function generateEncounterLogs() {
+                const encounterContentDiv = document.getElementById('encounters-content');
+                if (!encounterContentDiv) return;
                 
-                // Set random position 
-                const randomX = Math.random() * 40 + 30; 
-                const randomY = Math.random() * 60 + 20; 
+                // Logs extracted and formatted from entity_0x3f_case_file.md (A-Z)
+                const logs = [
+                    { id: "734-A", content: "Subject reported the entity 'teleporting' across a $10M$ space. Left behind static bursts and **three fading afterimages** along its path. (TEMPORAL ECHOES CONFIRMED)" },
+                    { id: "734-B", content: "Audio logs confirm the static signature immediately prior to manifestation. Close proximity causes signal crosstalk and short-term hearing damage. (AUDITORY STATIC)" },
+                    { id: "734-C", content: "ENTIRE AREA REPORTED AS \"FLAT AND COLORLESS\" BY OBSERVER. Walls appeared as simple two-tone boxes. (REALITY DE-RESOLUTION)" },
+                    { id: "735-D", content: "Subject brushed past an **afterimage** left by the entity. The subject reported severe disorientation, a feeling of \"falling backwards in time,\" and temporary motor function loss. (TEMPORAL ECHOES - PHYSICAL INTERACTION)" },
+                    { id: "736-E", content: "Observation team lost visual tracking when the environment around the entity suddenly lost all shadow, depth, and detail for approximately $4$ seconds. Terrain became \"unnavigable.\" (REALITY DE-RESOLUTION - WIDE AREA)" },
+                    { id: "737-F", content: "Subject observed the entity momentarily holding a rusted iron pipe, generated via a burst of static, before deleting it. The glitching was visually erratic. (GLITCH-INJECTION CONFIRMED)" },
+                    { id: "738-G", content: "OBSERVER C. TUCKER INITIATED. During a routine observation, C. Tucker briefly noted the entity holding a **Blue Flower**. The entity immediately froze, then the flower vanished in a flash of red light. (BLUE FLOWER PARADOX)" },
+                    { id: "739-H", content: "Entity generated a complex $3D$ rendering of a human skull, which immediately collapsed into a noise of static. (GLITCH-INJECTION - COMPLEX FORM FAILURE)" },
+                    { id: "740-I", content: "Field equipment recorded residual static affecting magnetic sensors up to $50M$ away from the last known location. (AUDITORY STATIC - RESIDUAL EFFECT)" },
+                    { id: "741-J", content: "During a slow manifestation, the stick figure was noted to have **five temporary limbs** visible in its afterimages, suggesting a corrupted rendering of a more complex form. (TEMPORAL ECHOES - HIDDEN FORM)" },
+                    { id: "742-K", content: "Entity observed deliberately causing a chair to glitch into existence, then immediately generating a **small, sharp knife** and destroying the chair with it. (GLITCH-INJECTION - HOSTILE USE)" },
+                    { id: "743-L", content: "Observer M. HINES reported the de-resolution effect being triggered by his **focusing on a single color**. Hypothesis: entity reacts to organized data input. (REALITY DE-RESOLUTION - TRIGGER)" },
+                    { id: "744-M", content: "The entity was tracked attempting to leave the controlled zone. Its teleportation failed, resulting in a single point of **pure void** on the floor for $0.2$ seconds. (PHASE TELEPORTATION - FAILURE)" },
+                    { id: "745-N", content: "The sound of its static signature was captured and played back. The resulting echo caused the recording device to violently malfunction and **erase its entire hard drive**. (AUDITORY STATIC - DATA CORRUPTION)" },
+                    { id: "746-O", content: "Entity generated a perfect, full-color rendering of a **human eye** in its hand before deleting it. Observer reported feeling intensely watched during the brief moment it existed. (GLITCH-INJECTION - SENSORY/EMOTIONAL)" },
+                    { id: "747-P", content: "Subject walked through a space where the entity had recently been. The afterimages caused a localized **time dilation effect**; the subject was $3$ seconds late to the rendezvous point. (TEMPORAL ECHOES - TIME DILATION)" },
+                    { id: "748-Q", content: "Entity was observed using a chain of fast, short teleports to **\"draw\" a corrupted circle** on the ground using its afterimages before leaving the area. (PHASE TELEPORTATION - PATTERNED MOVEMENT)" },
+                    { id: "749-R", content: "Observer B. KANE reported the stick figure's head momentarily changing from 'O' to an **unresolved mathematical symbol** ($\\int$), before snapping back. (CORE FORM INSTABILITY)" },
+                    { id: "750-S", content: "The entity manifested a small, functioning **music box** playing a distorted, unsettling lullaby, then deleted it upon approach. (GLITCH-INJECTION - AUDITORY TRAP)" },
+                    { id: "751-T", content: "De-resolution effect caused the floor texture to be replaced by **pure binary code** for a moment, making the footing unpredictable. (REALITY DE-RESOLUTION - DATA TEXTURE)" },
+                    { id: "752-U", content: "Entity made contact with a deactivated surveillance camera. The camera immediately activated and began recording, but the only image was a frame of **solid green static**. (AUDITORY STATIC - SIGNAL MANIPULATION)" },
+                    { id: "753-V", content: "The stick figure was observed holding the **Blue Flower** for an unusually long $15$-second duration. It did not vanish until an observer attempted to **describe the flower's color** out loud. (BLUE FLOWER PARADOX - TRIGGER DELAY)" },
+                    { id: "754-W", content: "A teleportation sequence was recorded where the entity's path appeared to bend space **backward on itself**, resulting in a $20M$ jump using only $5M$ of real space. (PHASE TELEPORTATION - SPATIAL MANIPULATION)" },
+                    { id: "755-X", content: "During a De-resolution event, a witness reported seeing the **environment revert to a lower-resolution version of itself** (like an old video game), including jagged edges on objects. (REALITY DE-RESOLUTION - PIXELATION)" },
+                    { id: "756-Y", content: "The entity generated a small, transparent **cage** around itself, glitched out of it immediately, and then deleted the cage. Purpose is unknown; possibly testing its own boundaries. (GLITCH-INJECTION - SELF-CONTAINMENT TEST)" },
+                    { id: "759-Z", content: "DIRECT DATA-STREAM ENCOUNTER. Entity generated a complex mathematical formula, which was immediately solved by the network, revealing the corrupted message. LAST LOG: <span class=\"corrupted-text\">⋮⚍ᓭℸ ̣    ꖎᒷᔑ⍊ᒷ   ᒲᒷ   ᔑꖎ𝙹リᒷ.</span> (TOTAL CORRUPTION - FINAL MESSAGE)" },
+                ];
 
-                glitchOverlay.style.left = `${randomX}%`;
-                glitchOverlay.style.top = `${randomY}%`;
-                
-                // Display the glitch
-                glitchOverlay.style.display = 'inline-block';
-                glitchOverlay.classList.add('glitch-active');
+                let html = '';
+                // Add a small header for the A-Z sequence
+                html += `<p class="sector-header">FULL A-Z INDEX (LOGS 734-A THROUGH 759-Z)</p>\n`;
 
-                // Hide it quickly (DURATION: 150ms to 400ms)
-                const displayDuration = Math.random() * 250 + 150; 
-                setTimeout(() => {
-                    glitchOverlay.classList.remove('glitch-active');
-                    glitchOverlay.style.display = 'none';
-                }, displayDuration);
-
-                // Schedule the next glitch (INTERVAL: 500ms to 2.5 seconds)
-                const nextGlitchTime = Math.random() * 2000 + 500; 
-                setTimeout(runRandomGlitch, nextGlitchTime);
+                logs.forEach(log => {
+                    let content = scrambleText(log.content, 1); // Limit to one replacement per log
+                    html += `<span class="text-white">LOG ${log.id}:</span> &gt; ${content}<br><br>\n`;
+                });
+                encounterContentDiv.innerHTML = html;
             }
 
-            // Start the word glitch loop
-            runRandomGlitch();
+            // --- FRAGMENTED JOURNAL ENTRY GENERATION LOGIC (01-50, A-J Index) ---
+            function generateJournalEntries() {
+                const journalContentDiv = document.getElementById('journal-content');
+                let html = '';
+                let currentEntryID = 1;
+                
+                // --- FIX for ReferenceError: letters is not defined ---
+                // Defines the letters array needed for the A-J sub-indexing in the journal entries.
+                const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+                // --------------------------------------------------------
+
+                const entries1 = [
+                    "Agent A-041 observed a Level 1 temporal echo at coordinates 41.22 / 88.01. Duration 1.4 seconds; GNF field held at $99.8\%$.",
+                    "Entity manifested as a basic 'T' shape, then resolved to stick figure. De-resolution caused $2.3\%$ sensor data loss (CODE #0A3BCF).",
+                    "Confirmed pattern: Entity movements correlate with local memory buffer read/write cycles. It uses data processing lag as locomotion.",
+                    "Agent A-089 filed a report on 'persistent feeling of being watched by the walls.' Cross-reference indicates environmental hue corruption (A_09) was active.",
+                    "The entity left behind a faint blue fractal. It vanished immediately upon focus. Logged as Blue Flower Paradox precursor. Checksum 489F2A.",
+                    "TECHNICAL ENTRY: Audio static burst non-directional, suggesting origin from a non-3D point source. Paradoxical data.",
+                    "New Locus Point detected at L-47 near the coolant exchange. Required full power cycle to remove residual static burst signature.",
+                    "Observed micro-level render failure on floor panel 12B. Panel appeared as pure black void for $0.05$ seconds. The entity was in the adjacent sector.",
+                    "Attempted to tag the entity with a tracking beacon (Type M-1). The beacon instantly became a static burst and disappeared. Loss report filed.",
+                    "Entity's presence caused a brief ($3$-second) shutdown of all non-essential life support systems in Sector 3. Containment is not stable."
+                ];
+                const entries2 = [
+                    "EQUIPMENT LOG 0011: Comm Array Sigma failed $8$ times in last hour. Diagnostics return 'Source Unknown: Recursive Loop.' Relying on physical notes.",
+                    "GNF Stabilizer 3 consistently shows negative power drain, pulling energy from an unknown source. Agent A-152 attempting cold reboot.",
+                    "Phase Lock Mechanism now only functions at $60\%$. Afterimages are lasting up to $5$ seconds. Rendering lag is increasing.",
+                    "Memory Buffer K-9 keeps resetting its internal clock to 03:00:00. This is the third time today. Cannot trust data timestamps.",
+                    "Entity appeared, manifested a simple square, then Optical Feed R-3 went flat and grey for seven minutes. It is weaponizing de-resolution.",
+                    "Temporal Anchor reported a $12 \\text{ ns}$ drift forward. The device is fighting its own programming due to local instability.",
+                    "Suit Diagnostic 01: Agent's internal auditory filter recorded a humming sound matching the entity's signature $50M$ away.",
+                    "HVAC Unit Z-9 reported a physical de-resolution event; its protective grating briefly appeared as a two-dimensional texture.",
+                    "Attempted to record the entity's movement path. The video feed only captured overlapping, chaotic loops (A_06). Data unusable.",
+                    "Agent A-160 reported acute nausea and disorientation following a $4$-second encounter. Medical team suspects high-frequency static exposure."
+                ];
+                const entries3 = [
+                    "ADMIN NOTE 0021: Orders received from Control contradict Protocol 05. Command A: 'Contain.' Command B: 'Allow Escape.' Authority fractured.",
+                    "Corridor walls losing texture. Observed a colleague walk *into* the wall and emerge unharmed but confused. De-Resolution is spreading.",
+                    "Entity drew the Blue Flower on an administrative memo. The ink vanished upon focus. The memo detailed my reassignment. **Do not engage the flower.**",
+                    "Roster log shows Agent A-202 terminated in 1993. I just had coffee with him. Causality shift (A_08) is altering perception of the past.",
+                    "Disciplinary Action Filed: Agent A-255 reported facility as 'pointless architecture built on a lie.' Cross-reference: the sentiment is becoming doctrine.",
+                    "Budget Allocation Report D-4 now contains random Greek letters instead of numbers. All financial data is compromised. Project running on faith.",
+                    "Security alert 403-B was triggered by a temporal echo of Agent A-001 from $3$ weeks ago. The past is physically walking through the facility.",
+                    "I requested a transfer out of Sector Gamma. Request denied with the automated response: 'Why leave the most honest place?'",
+                    "Personnel Briefing: All staff must now ignore any instances of Environmental Hue Corruption (A_09). 'The colors are irrelevant to the mission objective.'",
+                    "The Central Authority log now lists itself as 'NULL.' Repeated requests for clarification failed. The command structure has disappeared."
+                ];
+                const entries4 = [
+                    "PERSONAL 0031 (Agent A-301): I am certain this moment has happened before. The effort to stop it is becoming redundant. Why fight the inevitable simple truth?",
+                    "I walked to the observation window. The exterior world is just a looping .GIF of a static night sky. We are contained *in* a file.",
+                    "I spoke to the entity's afterimage. It didn't respond, but my notes suddenly contained the word, 'WAIT.' Time is no longer linear here.",
+                    "What if the blue flower is a key? It's the only thing the entity creates that isn't a weapon or a glitch. The only moment of *intentional* beauty.",
+                    "I saw a terminal display my full history, but the entries were all fragmented lies. I realized my identity is just as unstable as the stick figure.",
+                    "My current thought process feels like a loop of previous thoughts. I am no longer having new ideas. Just reruns. Is this the true containment?",
+                    "The dread is gone. It's replaced by a profound sense of 'almost finished.' Like a program waiting for the final instruction.",
+                    "I spent $45$ minutes staring at a light switch, watching the light shift from green to purple (A_09) in time with my pulse. It knows I am watching.",
+                    "I tried to draw the stick figure. It came out perfectly, but the moment I finished the last line, the drawing faded into the paper fibers.",
+                    "I am writing this on paper now, hoping physical medium will resist the shift. The date on the paper just corrupted. It says: 2025.2.2045. I'm stopping now."
+                ];
+                const entries5 = [
+                    `SIGNAL 0041: ${corrupted('THE VOID IS SIMPLE. THE VOID IS HOME. I AM')} Agent A-499. The entity is standing still. It is just observing.`,
+                    `LOG FRAGMENT: ${corrupted('0x000F_FFFF')} - Core integrity now at ${corrupted('00.1\%')}$. Static noise signature has achieved total dominance.`,
+                    `FINAL LOG: ${corrupted('THE STICK FIGURE SMILED. IT WAS NOT A MOUTH. IT WAS A GLITCH.')} I saw the edges of the archive dissolving.`,
+                    `EMERGENCY EXIT VECTOR: ${corrupted('DO NOT OPEN. REPEAT: DO NOT OPEN. WE ARE NOT READY TO BE RESOLVED.')} - Checksum ${corrupted('NULL')} Final.`,
+                    `ENTRY 0045: ${corrupted('SYSTEM_OVERLOAD_TERMINAL_NULLIFICATION_COMPLETE')} - ${corrupted('EXIT_VECTOR_OPEN')} - REALITY_RENDER_FAIL`,
+                    `LAST_PULSE: The gravity in Sector 5 reversed briefly. Everything that wasn't tied down ${corrupted('FLOATED INTO THE ERROR LOG.')}`,
+                    `ENTITY_NULL_STATE: ${corrupted('MAXIMUM COHERENCE AT MINIMUM DETAIL.')} It is brighter now. A single line of pure, white code.`,
+                    `COMMAND_OVERRIDE: The system has initiated ${corrupted('TERMINAL_DECONSTRUCTION (A_11)')}$. This is not authorized. I cannot stop the sequence.`,
+                    `TIME_STAMP_FAILURE: The time is ${corrupted('EVERYWHERE AND NOWHERE')}$. I am logging from a memory that hasn't happened yet.`,
+                    `ENTRY 0050: ${corrupted('//END TRANSMISSION. THANK YOU FOR ACCESSING THE ARCHIVE. RESOLUTION COMPLETE.')}`
+                ];
+                
+                const allEntries = [entries1, entries2, entries3, entries4, entries5];
+                const segmentLabels = ['TECHNICAL', 'EQUIPMENT', 'ADMIN', 'PERSONAL', 'FINAL'];
+                
+                const segmentHeaders = [
+                    "--- SEGMENT I (01-10): INITIAL CONTACT :: TECHNICAL LOGS ---",
+                    "--- SEGMENT II (11-20): EROSION :: EQUIPMENT LOGS ---",
+                    "--- SEGMENT III (21-30): BREAKDOWN :: ADMINISTRATIVE NOTES ---",
+                    "--- SEGMENT IV (31-40): RESIGNATION :: PERSONAL REFLECTIONS ---",
+                    "--- SEGMENT V (41-50): CATASTROPHE :: FINAL SIGNALS ---"
+                ];
+                
+                allEntries.forEach((entries, segmentIndex) => {
+                    const segmentName = segmentLabels[segmentIndex];
+                    
+                    html += `<p class="sector-header">${segmentHeaders[segmentIndex]}</p>\n`;
+
+                    entries.forEach((content, entryIndex) => {
+                        const letter = letters[entryIndex % letters.length];
+                        const displayID = currentEntryID.toString().padStart(2, '0') + '-' + letter;
+                        
+                        let processedContent = scrambleText(content, 2);
+                        html += `<span class="text-white">ENTRY ${displayID} [${segmentName}]: </span>&gt; ${processedContent}<br>\n`;
+                        currentEntryID++;
+                    });
+                });
+
+                journalContentDiv.innerHTML = html;
+            }
+
+            // --- ACQUISITION PROTOCOL GENERATION LOGIC (UPDATED TO 5 SEGMENTS / 15 STEPS) ---
+            function generateProtocolEntries() {
+                const protocolContentDiv = document.getElementById('protocol-content');
+                let html = '';
+                
+                const protocolData = [
+                    {
+                        header: "I. TARGET IDENTIFICATION AND INITIAL ASSESSMENT",
+                        focus: "Defining the required asset or data set.",
+                        steps: [
+                            "[1.1] PARAMETER DEFINITION: Clearly establish the specific characteristics, volume, and quality criteria the target must meet.",
+                            "[1.2] FEASIBILITY ANALYSIS: Conduct a preliminary review of technical, logistical, and ethical hurdles associated with acquisition.",
+                            "[1.3] RISK/BENEFIT CALCULATION: Quantify the potential value of the asset against the associated operational and compliance risks. Output is a formal **Target Specification Document**."
+                        ]
+                    },
+                    {
+                        header: "II. RESOURCE ALLOCATION AND TEAM ASSEMBLY",
+                        focus: "Ensuring all necessary support elements are in place before deployment.",
+                        steps: [
+                            "[2.1] BUDGET APPROVAL: Secure and allocate the necessary financial resources for the operation, including contingency funds.",
+                            "[2.2] PERSONNEL ASSIGNMENT: Assemble the multidisciplinary acquisition team, ensuring all roles (e.g., technical, compliance, security) are covered by certified specialists.",
+                            "[2.3] EQUIPMENT READINESS: Verify and calibrate all specialized hardware and software required for safe and effective acquisition."
+                        ]
+                    },
+                    {
+                        header: "III. ENGAGEMENT STRATEGY AND AUTHORIZATION",
+                        focus: "Developing the plan of action and obtaining formal legal consent.",
+                        steps: [
+                            "[3.1] TACTICAL PLAN DEVELOPMENT: Draft the step-by-step strategy for the physical or digital engagement, including primary, secondary, and tertiary approaches.",
+                            "[3.2] CONTINGENCY PLANNING: Define explicit measures for unexpected events, data corruption, or procedural failures (e.g., **\"Abort and Retreat\"** criteria).",
+                            "[3.3] COMPLIANCE SIGN-OFF: Obtain mandatory authorization from the Legal and Ethics Review Board (LERB) based on the finalized Tactical Plan."
+                        ]
+                    },
+                    {
+                        header: "IV. EXECUTION AND INTEGRITY VERIFICATION",
+                        focus: "The active phase of the protocol.",
+                        steps: [
+                            "[4.1] FIELD DEPLOYMENT: Execute the LERB-approved Tactical Plan. Strict real-time adherence to the procedure is non-negotiable.",
+                            "[4.2] DATA CAPTURE & REDUNDANCY: Utilize two or more independent methods for asset capture to ensure immediate redundancy.",
+                            "[4.3] REAL-TIME CHECKSUM & VERIFICATION: Perform instant cryptographic checksums on all captured data packets to confirm integrity and completeness at the point of acquisition."
+                        ]
+                    },
+                    {
+                        header: "V. INTEGRATION AND FINAL DOCUMENTATION",
+                        focus: "The final steps to make the asset usable and record the history of the acquisition.",
+                        steps: [
+                            "[5.1] SECURE TRANSFER: Move the acquired asset from the field capture devices to the designated central, encrypted repository (**The Vault**).",
+                            "[5.2] POST-OP DEBRIEF: Conduct a mandatory debriefing with the entire team to review performance, identify lessons learned, and log any procedural anomalies.",
+                            "[5.3] PROTOCOL CLOSURE REPORT: Finalize the comprehensive documentation, including the original Target Specification, the approved Tactical Plan, all field logs, and the final checksum verification certificate."
+                        ]
+                    }
+                ];
+
+                // 50-Word Introduction
+                const intro = "This protocol outlines the structured process for securing novel data sets or target assets. This ensures ethical compliance, minimizes operational risk, and guarantees data integrity from initial identification through final integration. Strict adherence to these five phases is mandatory for successful acquisition and subsequent analysis.";
+                
+                html += `<span class="text-white">> PROTOCOL OVERVIEW: (The '50 Back' Summary)</span><br>`;
+                html += `&gt; ${scrambleText(intro)}<br><br>`;
+
+                // The 5 Segments
+                protocolData.forEach((segment, index) => {
+                    html += `<p class="sector-header">${segment.header}</p>\n`;
+                    let focus = scrambleText(segment.focus, 1);
+                    html += `<span class="text-yellow-400">PHASE FOCUS:</span> ${focus}<br>`;
+                    
+                    segment.steps.forEach(step => {
+                        let processedStep = scrambleText(step, 1);
+                        html += `&gt; ${processedStep}<br>\n`;
+                    });
+                });
+
+                protocolContentDiv.innerHTML = html;
+            }
+
+
+            // Run all generation functions as soon as the DOM is ready
+            generateAbilityLogs();
+            generateEncounterLogs();
+            generateJournalEntries();
+            generateProtocolEntries();
         });
     </script>
 </body>
