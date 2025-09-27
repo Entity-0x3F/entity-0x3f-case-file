@@ -166,6 +166,11 @@
             <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.5 (A-Z COMPLETE)</h1>
             <p class="mt-1">ACCESS: [SECURE] WARNING: [DATA-LAYER CORRUPTION IMMINENT]</p>
         </header>
+        
+        <!-- CONTAINMENT CLOCK -->
+        <div id="containment-clock" class="mb-6 text-xl text-red-400 font-bold border border-red-800 p-2 shadow-inner shadow-red-900/50">
+            CONTAINMENT TIMELINE: <span id="time-display" class="text-white">...CALCULATING...</span>
+        </div>
 
         <div class="md:grid md:grid-cols-4 lg:grid-cols-5 gap-8">
             
@@ -261,7 +266,7 @@
                             <br><br>
                             <span class="text-white">LOG 736-E:</span> A remote probe, upon encountering the entity, began playing all recorded audio in rapid, overlapping loops. The entity's auditory static then completely annihilated the probe's microphone. (RECURSIVE AUDIO DAMAGE)
                             <br><br>
-                            <span class="text-white">LOG 737-F:</span> OBSERVER NOTICED THE ENTITY MANIFESTING A SHARP, PIXELATED SHARD OF GLASS IN ITS HAND. IT VANISHED MOMENTS LATER. NO INJURY SUSTAINED. (GLITCH-INJECTION TESTING)
+                            <span class="text-white">LOG 737-F:</span> OBSERVER NOTICED THE ENTITY MANIFESTING A SHARP, PIXELATED SHARD OF GLASS IN ITS HAND. IT VANISHED MOMENTS LATER. (GLITCH-INJECTION TESTING)
                             <br><br>
                             <span class="text-white">LOG 738-G:</span> Widespread report of furniture and simple objects in the immediate vicinity briefly 'de-resolving' into single-color geometric shapes. Navigational hazard reported. (ENVIRONMENTAL DE-RESOLUTION)
                             <br><br>
@@ -327,6 +332,7 @@
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
 
+            // --- NAVIGATION AND TABS LOGIC ---
             const activateTab = (tabId) => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 contentSections.forEach(section => {
@@ -354,6 +360,48 @@
             // Initial load of the overview section
             activateTab('overview');
 
+            // --- CONTAINMENT CLOCK LOGIC (Updated Start Date) ---
+            const CONTAINMENT_START_DATE = new Date('1793-07-23T00:00:00'); // New Start Date: July 23rd, 1793
+
+            function updateContainmentClock() {
+                const now = new Date();
+                const difference = now.getTime() - CONTAINMENT_START_DATE.getTime();
+
+                // Calculate time components
+                const millisecondsInSecond = 1000;
+                const millisecondsInMinute = 60 * millisecondsInSecond;
+                const millisecondsInHour = 60 * millisecondsInMinute;
+                const millisecondsInDay = 24 * millisecondsInHour;
+
+                // Simple approximation for years (365.25 days per year)
+                const millisecondsInYear = millisecondsInDay * 365.25;
+
+                const years = Math.floor(difference / millisecondsInYear);
+                const remainingAfterYears = difference % millisecondsInYear;
+
+                const days = Math.floor(remainingAfterYears / millisecondsInDay);
+                const remainingAfterDays = remainingAfterYears % millisecondsInDay;
+
+                const hours = Math.floor(remainingAfterDays / millisecondsInHour);
+                const remainingAfterHours = remainingAfterDays % millisecondsInHour;
+
+                const minutes = Math.floor(remainingAfterHours / millisecondsInMinute);
+                const remainingAfterMinutes = remainingAfterHours % millisecondsInMinute;
+
+                const seconds = Math.floor(remainingAfterMinutes / millisecondsInSecond);
+
+                // Format the output
+                const timeString = `${years} Yrs ${days.toString().padStart(3, '0')} Days ${hours.toString().padStart(2, '0')} Hrs ${minutes.toString().padStart(2, '0')} Mins ${seconds.toString().padStart(2, '0')} Secs`;
+
+                const timeDisplay = document.getElementById('time-display');
+                if (timeDisplay) {
+                    timeDisplay.textContent = timeString;
+                }
+            }
+            
+            // Run the clock immediately and set an interval
+            updateContainmentClock();
+            setInterval(updateContainmentClock, 1000);
 
             // --- FULL SCREEN GLITCH LOGIC ---
             function runFullScreenGlitch() {
@@ -395,7 +443,7 @@
                     return;
                 }
 
-                // NEW: 1 in 7 chance for a full screen glitch
+                // 1 in 7 chance for a full screen glitch
                 if (Math.random() < (1 / 7)) {
                     runFullScreenGlitch();
                 }
@@ -417,14 +465,14 @@
                 glitchOverlay.style.display = 'inline-block';
                 glitchOverlay.classList.add('glitch-active');
 
-                // 4. Hide it quickly (LONGER DURATION: 150ms to 400ms)
+                // 4. Hide it quickly (DURATION: 150ms to 400ms)
                 const displayDuration = Math.random() * 250 + 150; 
                 setTimeout(() => {
                     glitchOverlay.classList.remove('glitch-active');
                     glitchOverlay.style.display = 'none';
                 }, displayDuration);
 
-                // 5. Schedule the next glitch (SHORTER INTERVAL: 500ms to 2.5 seconds)
+                // 5. Schedule the next glitch (INTERVAL: 500ms to 2.5 seconds)
                 const nextGlitchTime = Math.random() * 2000 + 500; 
                 setTimeout(runRandomGlitch, nextGlitchTime);
             }
