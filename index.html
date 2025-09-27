@@ -6,7 +6,7 @@
     <title>ENTITY-NULL :: ARCHIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chosen Palette: Glitch Terminal (Black, Neon Green, High-Contrast White/Red for corruption) -->
-    <!-- Application Structure Plan: Command-Line Interface (CLI) style maintained. The stick figure has been removed completely per user request. -->
+    <!-- Application Structure Plan: Command-Line Interface (CLI) style maintained. -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         body {
@@ -15,7 +15,6 @@
             color: #0f0; 
             overflow-x: hidden;
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><text x="0" y="14" font-family="monospace" font-size="16" fill="%2300ff00">%3E</text></svg>'), auto;
-            /* Added transition for smoother full-glitch effect return */
             transition: filter 0.1s ease-out, transform 0.1s ease-out;
         }
         .text-neon {
@@ -53,13 +52,13 @@
             font-size: 1.1rem;
         }
         
-        /* Style for the fixed corrupted text in logs */
+        /* Style for the fixed corrupted text in logs and the clock glitch */
         .corrupted-text {
             color: #f00; /* Red color for error/corruption */
             font-size: 1.2rem;
             text-shadow: 0 0 5px #f00; /* Glow */
             animation: text-glitch 0.2s infinite alternate;
-            display: inline-block; /* Essential for text-shadow on a span */
+            display: inline-block;
         }
         @keyframes text-glitch {
             0% { text-shadow: 0 0 3px #f00; transform: skewX(1deg); }
@@ -68,11 +67,28 @@
         }
 
         /* ---------------------------------------------------------------------- */
-        /* NEW FULL SCREEN GLITCH LOGIC: Text Warp and Purple Shift */
-        /* Targets all primary text elements when the glitch is active */
+        /* System Status Styles (Smaller) */
+        #system-status {
+            color: #0f0;
+            border-color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            /* Blinking effect for stable status */
+            animation: blink-status 1s steps(1, end) infinite;
+        }
+        @keyframes blink-status {
+            50% { opacity: 0.7; }
+        }
+        .status-breach {
+            color: #f00 !important;
+            border-color: #f00 !important;
+            text-shadow: 0 0 8px #f00 !important;
+            /* Reusing the aggressive glitch for breaches */
+            animation: text-glitch-fast 0.05s infinite alternate; 
+        }
 
+        /* ---------------------------------------------------------------------- */
+        /* FULL SCREEN GLITCH LOGIC */
         .full-glitch-active {
-            /* Reset body filter/transform from previous version */
             filter: none;
             transform: none;
         }
@@ -83,52 +99,32 @@
         .full-glitch-active p,
         .full-glitch-active .terminal-output,
         .full-glitch-active .nav-item {
-            /* Forcing a purple look and starting the rapid motion */
-            color: #ff00ff !important; /* Force purple text */
-            animation: text-warp-teleport 0.04s infinite alternate; /* Fast, frantic movement */
-            
-            /* Stronger purple-based chromatic aberration for whole screen text */
+            color: #ff00ff !important; 
+            animation: text-warp-teleport 0.04s infinite alternate; 
             text-shadow: 
                 2px 0 0 rgba(255, 0, 255, 1), 
-                -2px -2px 0 rgba(255, 0, 0, 0.7), /* Red shift */
-                2px 2px 0 rgba(0, 0, 255, 0.7); /* Blue shift */
+                -2px -2px 0 rgba(255, 0, 0, 0.7),
+                2px 2px 0 rgba(0, 0, 255, 0.7); 
         }
 
         @keyframes text-warp-teleport {
-            0% { 
-                transform: translate(1px, 3px) skewX(2deg); 
-                opacity: 0.9; 
-            }
-            25% { 
-                transform: translate(-3px, -1px) skewY(-1deg); 
-                opacity: 0.85; 
-            }
-            50% { 
-                transform: translate(4px, 0) skewX(1deg); 
-                opacity: 0.95; 
-            }
-            75% { 
-                transform: translate(-1px, 2px) skewY(2deg); 
-                opacity: 0.9; 
-            }
-            100% { 
-                transform: translate(0, -4px) skewX(-2deg); 
-                opacity: 1; 
-            }
+            0% { transform: translate(1px, 3px) skewX(2deg); opacity: 0.9; }
+            25% { transform: translate(-3px, -1px) skewY(-1deg); opacity: 0.85; }
+            50% { transform: translate(4px, 0) skewX(1deg); opacity: 0.95; }
+            75% { transform: translate(-1px, 2px) skewY(2deg); opacity: 0.9; }
+            100% { transform: translate(0, -4px) skewX(-2deg); opacity: 1; }
         }
-        /* ---------------------------------------------------------------------- */
         
-        /* UPDATED: Style for the random overlay glitches (Larger font, more frantic) */
+        /* Style for the random overlay glitches */
         #glitch-flicker-overlay {
             position: absolute;
-            z-index: 1000; /* Ensure it's on top of content */
-            font-size: 2.2rem; /* INCREASED SIZE */
-            color: #ff00ff; /* Base Purple/Magenta */
-            /* New layered shadows for the chromatic aberration/glitch look */
+            z-index: 1000;
+            font-size: 2.2rem;
+            color: #ff00ff; 
             text-shadow: 
-                1px 1px 5px rgba(255, 0, 0, 0.5), /* Transparent Red offset */
-                -1px -1px 5px rgba(0, 0, 255, 1), /* Blue offset (stronger) */
-                0 0 10px #ff00ff; /* Base purple glow */
+                1px 1px 5px rgba(255, 0, 0, 0.5), 
+                -1px -1px 5px rgba(0, 0, 255, 1), 
+                0 0 10px #ff00ff; 
             opacity: 0;
             pointer-events: none;
         }
@@ -137,40 +133,69 @@
             animation: text-glitch-fast 0.05s infinite alternate;
         }
         @keyframes text-glitch-fast {
-            /* Now manipulating the text position and the shadows simultaneously */
-            0% { 
-                transform: translate(2px, 2px) skewX(1deg); 
-                opacity: 0.9;
-                text-shadow: 
-                    2px 0 5px rgba(255, 0, 0, 0.5), /* Red shift right */
-                    -2px 0 5px rgba(0, 0, 255, 1), /* Blue shift left */
-                    0 0 10px #ff00ff;
-            }
-            100% { 
-                transform: translate(-2px, -2px) skewX(-1deg); 
-                opacity: 1;
-                text-shadow: 
-                    -1px 0 5px rgba(255, 0, 0, 0.5), /* Red shift left */
-                    1px 0 5px rgba(0, 0, 255, 1), /* Blue shift right */
-                    0 0 10px #ff00ff;
-            }
+            0% { transform: translate(2px, 2px) skewX(1deg); opacity: 0.9; text-shadow: 2px 0 5px rgba(255, 0, 0, 0.5), -2px 0 5px rgba(0, 0, 255, 1), 0 0 10px #ff00ff; }
+            100% { transform: translate(-2px, -2px) skewX(-1deg); opacity: 1; text-shadow: -1px 0 5px rgba(255, 0, 0, 0.5), 1px 0 5px rgba(0, 0, 255, 1), 0 0 10px #ff00ff; }
         }
 
     </style>
+    <!-- Firebase Imports for Environment Compliance (Required for canvas but not used in this specific HTML) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            setLogLevel('Debug');
+
+            const authenticate = async () => {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    // console.log("Firebase authentication successful.");
+                } catch (error) {
+                    console.error("Firebase Auth Error:", error);
+                }
+            };
+            authenticate();
+        }
+    </script>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
     <div class="max-w-7xl mx-auto">
 
-        <!-- HEADER AND COMMAND LINE PROMPT -->
-        <header class="mb-6 border-b border-green-500 pb-2">
-            <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.5 (A-Z COMPLETE)</h1>
-            <p class="mt-1">ACCESS: [SECURE] WARNING: [DATA-LAYER CORRUPTION IMMINENT]</p>
-        </header>
-        
-        <!-- CONTAINMENT CLOCK -->
-        <div id="containment-clock" class="mb-6 text-xl text-red-400 font-bold border border-red-800 p-2 shadow-inner shadow-red-900/50">
-            CONTAINMENT TIMELINE: <span id="time-display" class="text-white">...CALCULATING...</span>
+        <!-- HEADER, CLOCK, AND STATUS SECTION (RESTRUCTURED) -->
+        <div class="mb-6 border-b border-green-500 pb-2">
+            <!-- Row 1: Title block and Containment Clock (Aligned Right) -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4">
+                
+                <!-- Main Title and Subtitle -->
+                <div>
+                    <h1 class="text-2xl sm:text-3xl text-neon">SYSTEM LOG: ENTITY-NULL ARCHIVE V2.5 (A-Z COMPLETE)</h1>
+                    <p class="mt-1">ACCESS: [SECURE] WARNING: [DATA-LAYER CORRUPTION IMMINENT]</p>
+                </div>
+                
+                <!-- CONTAINMENT CLOCK (TOP RIGHT) -->
+                <div id="containment-clock" class="mt-4 md:mt-0 text-sm md:text-base text-red-400 font-bold border border-red-800 p-1 shadow-inner shadow-red-900/50 md:text-right w-full md:w-auto">
+                    CONTAINMENT TIMELINE: <span id="time-display" class="text-white">...CALCULATING...</span>
+                </div>
+            </div>
+            
+            <!-- Row 2: SYSTEM STATUS INDICATOR (Smaller Box) -->
+            <div id="system-status" class="text-sm font-bold border p-1 text-center shadow-inner inline-block mx-auto md:mx-0">
+                <span id="status-text">[SYSTEM STATUS: CONTAINED]</span>
+            </div>
+
         </div>
+        <!-- END OF HEADER BLOCK -->
 
         <div class="md:grid md:grid-cols-4 lg:grid-cols-5 gap-8">
             
@@ -181,14 +206,13 @@
                     <li><a class="nav-item active block" data-tab="overview">01. OVERVIEW_LOAD</a></li>
                     <li><a class="nav-item block" data-tab="abilities">02. ABILITIES_LOAD</a></li>
                     <li><a class="nav-item block" data-tab="encounters">03. LOG_ENCOUNTERS</a></li>
-                    <li><a class="nav-item block" data-tab="gallery">04. VIEW_GALLERY</a></li>
+                    <li><a class="nav-item block" data-tab="journal">04. AGENT_JOURNAL</a></li> 
+                    <li><a class="nav-item block" data-tab="gallery">05. VIEW_GALLERY</a></li> 
                 </ul>
             </nav>
 
             <!-- RIGHT CONTENT AREA -->
-            <main id="content-area" class="md:col-span-3 lg:col-span-4 relative"> <!-- Changed to lg:col-span-4 to take up the space where the figure was -->
-
-                <!-- STICK FIGURE VISUAL (REMOVED) -->
+            <main id="content-area" class="md:col-span-3 lg:col-span-4 relative"> 
                 
                 <!-- Dynamic Glitch Overlay -->
                 <span id="glitch-flicker-overlay" class="absolute top-0 left-0" style="display: none;"></span>
@@ -294,7 +318,7 @@
                             <br><br>
                             <span class="text-white">LOG 750-S:</span> OBSERVER SAW THE ENTITY SLOWLY MANIFEST A BLUE FLOWER, HOLD IT, AND THEN, UPON MAKING EYE CONTACT, INSTANTANEOUSLY ERASE IT. (BLUE FLOWER PARADOX CONFIRMATION)
                             <br><br>
-                            <span class="text-white">LOG 751-T:</span> A log of the entity deliberately leaving behind a single, distorted character of text (`_`) on a monitor screen before disappearing. (CORRUPTED MARKER)
+                            <span class="text-white">LOG 751-T:</span> The entity deliberately left behind a single, distorted character of text (`_`) on a monitor screen before disappearing. (CORRUPTED MARKER)
                             <br><br>
                             <span class="text-white">LOG 752-U:</span> An unidentified researcher's uniform briefly de-resolved into a flat, gray texture while the entity was in the room. Clothes returned to normal upon entity departure. (TEXTURAL DE-RESOLUTION)
                             <br><br>
@@ -310,6 +334,118 @@
                         </div>
                     </section>
                     
+                    <!-- MASSIVELY EXPANDED AGENT JOURNAL SECTION (Now 04) - HIGH VOLUME ENTRIES -->
+                    <section id="journal" class="content-section">
+                        <h2 class="text-xl text-white mb-3">> ACCESSING FRAGMENTED AGENT JOURNAL ENTRIES (READ CAREFULLY)</h2>
+                        <div class="terminal-output text-yellow-300">
+                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- INITIAL DECADES (YEARS 1 - 50) ---</p>
+                            
+                            <span class="text-white">ENTRY 03: DATE OMITTED (YEAR 1)</span>
+                            &gt; The initial brief was a lie. It's not contained. It's just *there*, waiting for a weak moment. We're babysitting a grenade with a stuck pin. I keep having to reformat my local drive.
+                            <br><br>
+                            <span class="text-white">ENTRY 12: DATE OMITTED (YEAR 4)</span>
+                            &gt; I keep seeing that damn flower. Just a flash of blue. Dr. Lee says it's an auditory hallucination manifesting visually. I don't care. I'm starting to think it's a taunt. He knows we see it.
+                            <br><br>
+                            <span class="text-white">ENTRY 17: DATE OMITTED (YEAR 5)</span>
+                            &gt; The containment clock froze again, showing <span class="corrupted-text">23,999</span> years. It corrected itself, but the terror is real. If the time breaks, we break. We are only held together by the linearity it despises.
+                            <br><br>
+                            <span class="text-white">ENTRY 21: DATE OMITTED (YEAR 6)</span>
+                            &gt; Incident 759-Z. I was there. I heard the voice. Not static. Worse. A wet, tearing sound. And the text it left behind—"just leave me alone." It's tired. It's not malicious. It just wants the *nothing* it came from.
+                            <br><br>
+                            <span class="text-white">ENTRY 30: DATE OMITTED (YEAR 8)</span>
+                            &gt; They put the whole facility on hard copy for two hours. No digital logs. Just paper and pen. Trying to starve the entity. It didn't stop the flickering. You can't unplug a paradox.
+                            <br><br>
+                            <span class="text-white">ENTRY 44: DATE OMITTED (YEAR 11)</span>
+                            &gt; The afterimages. They smell like ozone and burnt copper. When the image is dense enough, you can push against it. Like pushing against a memory. I saw my own reflection in one of them today. It was laughing.
+                            <br><br>
+                            <span class="text-white">ENTRY 58: DATE OMITTED (YEAR 15)</span>
+                            &gt; The static is getting worse. I hear voices in the white noise now. Not words, just whispers in the gaps between the sound. I had to ditch the headset. The silence is louder.
+                            <br><br>
+                            <span class="text-white">ENTRY 79: DATE OMITTED (YEAR 20)</span>
+                            &gt; They assigned me to watch a loop of 735-D for 48 hours. The way it glitches out of the corner... it defies geometry. I keep checking the corners of my room. They're still square. For now.
+                            <br><br>
+                            <span class="text-white">ENTRY 101: DATE OMITTED (YEAR 26)</span>
+                            &gt; It manifested the flower again. This time, I didn't move. I stared at it. It was perfect. Then it blinked, and the flower was gone, replaced by a single, sharp shard of glass on the floor. A <span class="corrupted-text">warning</span>.
+                            <br><br>
+                            <span class="text-white">ENTRY 115: DATE OMITTED (YEAR 30)</span>
+                            &gt; I think the entity is lonely. Why else the consistent effort to interact, even violently? It wants to be acknowledged, but it's fundamentally wrong. I feel sorry for it. That is a security risk.
+                            <br><br>
+                            <span class="text-white">ENTRY 142: DATE OMITTED (YEAR 40)</span>
+                            &gt; The afterimages feel like cold spots. Not temperature. Just absence. I walked through one today. It felt like stepping into an old photograph. The air went thin.
+                            
+                            <br><br>
+                            <p class="text-lg text-white text-center italic my-6">... THOUSANDS OF ENTRIES OMITTED FOR BREVITY (LOGS 143 - 870) ...</p>
+                            
+                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- MID-CENTURY EROSION (YEARS 51 - 150) ---</p>
+
+                            <span class="text-white">ENTRY 871: DATE OMITTED (YEAR 52)</span>
+                            &gt; They decommissioned the old containment cell. It wasn't breach damage. The room itself became mathematically unsound. You couldn't measure the distances correctly inside it. A permanent spatial wound.
+                            <br><br>
+                            <span class="text-white">ENTRY 905: DATE OMITTED (YEAR 57)</span>
+                            &gt; I keep finding my keys on the wrong side of the door. Not a displacement. They were on the inside when I left, but I clearly remember turning the lock from the outside. Causality shift is <span class="corrupted-text">subtle</span> now.
+                            <br><br>
+                            <span class="text-white">ENTRY 1022: DATE OMITTED (YEAR 65)</span>
+                            &gt; I dreamt of the blue flower. It was growing out of my own chest. When I woke up, the bedside lamp was buzzing and the light was pure purple for a minute. They switched my medication.
+                            <br><br>
+                            <span class="text-white">ENTRY 1140: DATE OMITTED (YEAR 73)</span>
+                            &gt; It stopped the time in one sector for 24 hours. The clocks just showed `12:00:00`. We didn't age, but when the time snapped back, everyone felt a week older. Time debt.
+                            <br><br>
+                            <span class="text-white">ENTRY 1308: DATE OMITTED (YEAR 82)</span>
+                            &gt; My replacement is talking about the stick figure as if it's a co-worker. "Did you see NULL in the break room? He left his flower again." They've been here three weeks. The indoctrination is <span class="corrupted-text">self-inflicted</span>.
+                            <br><br>
+                            <span class="text-white">ENTRY 1511: DATE OMITTED (YEAR 91)</span>
+                            &gt; I saw it manifest a complex gear mechanism, watch it spin for a full second, then dissolve it. It's practicing. Not for escape. For creation. That's worse.
+                            <br><br>
+                            <span class="text-white">ENTRY 1789: DATE OMITTED (YEAR 105)</span>
+                            &gt; Found a whole paragraph missing from the main containment manual. No delete log. Just gone. The entry was about the entity's theoretical origin. Now, we don't know how to fill the <span class="corrupted-text">blank</span>.
+                            <br><br>
+                            <span class="text-white">ENTRY 2005: DATE OMITTED (YEAR 120)</span>
+                            &gt; I found a log entry in my own handwriting that I don't remember writing: <span class="corrupted-text">I&nbsp;AM&nbsp;NOT&nbsp;REAL</span>. Security thinks it was the entity. I think it was me.
+                            <br><br>
+                            <span class="text-white">ENTRY 2333: DATE OMITTED (YEAR 145)</span>
+                            &gt; The afterimages are starting to overlap. If you get three or more on top of each other, the density causes a temporary visual flash—like a camera bulb going off. Then everything feels slow for a moment.
+                            
+                            <br><br>
+                            <p class="text-lg text-white text-center italic my-6">... THOUSANDS OF ENTRIES OMITTED FOR BREVITY (LOGS 2334 - 5800) ...</p>
+                            
+                            <p class="text-red-500 font-bold mb-4 border-b border-red-800 pb-2">--- LATE STAGES & RESIGNATION (YEARS 151 - 232) ---</p>
+
+                            <span class="text-white">ENTRY 5801: DATE OMITTED (YEAR 160)</span>
+                            &gt; The boredom is the true enemy. I almost hope for a major breach just for a change of pace. I think the entity senses this. That's why the glitches are getting louder.
+                            <br><br>
+                            <span class="text-white">ENTRY 6120: DATE OMITTED (YEAR 175)</span>
+                            &gt; The entire floor tile pattern in Sector Beta shifted from checkerboard to diagonal lines, and no one questioned it until I pointed it out. They looked at me like I was the anomaly.
+                            <br><br>
+                            <span class="text-white">ENTRY 6500: DATE OMITTED (YEAR 185)</span>
+                            &gt; I saw a piece of <span class="corrupted-text">it</span>, a fleeting shadow, outside the walls today. Not an afterimage. A prediction. We are contained, but the threat is already outside.
+                            <br><br>
+                            <span class="text-white">ENTRY 7002: DATE OMITTED (YEAR 198)</span>
+                            &gt; I am the 7th Agent assigned to this terminal who believes the entity is trying to **communicate love** via the blue flower. I recorded the static signature of the moment it vanishes. It sounds like a sigh.
+                            <br><br>
+                            <span class="text-white">ENTRY 7111: DATE OMITTED (YEAR 200)</span>
+                            &gt; The most frightening thing is the silence between the static. When it stops humming, the facility sounds *too* real. Like the resolution has been cranked up beyond human tolerance.
+                            <br><br>
+                            <span class="text-white">ENTRY 7345: DATE OMITTED (YEAR 208)</span>
+                            &gt; Agent K. disappeared. His last log just says: `The Entity-NULL is the only one who remembers the original color of the sky.` We're filing it as an **unauthorized structural re-evaluation**.
+                            <br><br>
+                            <span class="text-white">ENTRY 7500: DATE OMITTED (YEAR 215)</span>
+                            &gt; Today, the blue flower didn't vanish. It just faded into pure white, like a monitor losing signal. It was a beautiful death. I wrote a poem about it. I shouldn't have.
+                            <br><br>
+                            <span class="text-white">ENTRY 7601: DATE OMITTED (YEAR 220)</span>
+                            &gt; We're calling them **Echo-Pockets**. Areas where the entity has phase-shifted too quickly, leaving behind a moment of time on repeat. Inside, you hear the same three seconds of static over and over.
+                            <br><br>
+                            <span class="text-white">ENTRY 7705: DATE OMITTED (YEAR 225)</span>
+                            &gt; My replacement is arriving next cycle. They look so young. So linear. I pity them. I tried to warn them about the smell of ozone and the color purple, but they just smiled. They don't know they're volunteering to be deleted.
+                            <br><br>
+                            <span class="text-white">ENTRY 7799: DATE OMITTED (YEAR 230)</span>
+                            &gt; I've decided: containment is a shared illusion. We monitor it, but it monitors our inability to stop. It knows we need it to exist so we have a purpose. The NULL state is contagious.
+                            <br><br>
+                            <span class="text-white">ENTRY 7810: DATE OMITTED (YEAR 232)</span>
+                            &gt; FINAL ENTRY. I am leaving this terminal. The time is now <span class="corrupted-text">04:44:44</span>. The flower is still blue. I'm going to see if I can touch the laughter in the afterimage. If I don't report back, assume <span class="corrupted-text">OPERATOR&nbsp;NULLIFIED</span>.
+                            <br><br>
+                        </div>
+                    </section>
+                    
                     <section id="gallery" class="content-section">
                         <h2 class="text-xl text-white mb-3">> ACCESSING VISUAL LOGS (STATUS: CLASSIFIED)</h2>
                         <div class="terminal-output">
@@ -320,6 +456,7 @@
                             <p class="mt-4 text-center">Unauthorized attempts to view may result in localized data corruption.</p>
                         </div>
                     </section>
+
 
                 </div>
             </main>
@@ -360,10 +497,44 @@
             // Initial load of the overview section
             activateTab('overview');
 
-            // --- CONTAINMENT CLOCK LOGIC (Updated Start Date) ---
-            const CONTAINMENT_START_DATE = new Date('1793-07-23T00:00:00'); // New Start Date: July 23rd, 1793
+            // --- CONTAINMENT CLOCK LOGIC (With Corruption) ---
+            const CONTAINMENT_START_DATE = new Date('1793-07-23T00:00:00'); 
+            const GLITCH_CHARACTERS = "0123456789ABCDEF-_.|[]{}";
+
+            function generateCorruptedTime() {
+                let corruptedString = "";
+                // Generate a random-length string that looks like garbage data
+                const length = 28; 
+                for (let i = 0; i < length; i++) {
+                    corruptedString += GLITCH_CHARACTERS.charAt(Math.floor(Math.random() * GLITCH_CHARACTERS.length));
+                }
+                return `[${corruptedString}]`;
+            }
 
             function updateContainmentClock() {
+                const timeDisplay = document.getElementById('time-display');
+
+                // 1. CLOCK CORRUPTION CHECK (Ability A_10: TEMPORAL_ANCHOR_INSTABILITY)
+                // 5% chance of temporal corruption every second
+                if (Math.random() < 0.05) { 
+                    // Force a brief corruption (100ms to 300ms)
+                    const corruptionDuration = Math.random() * 200 + 100; 
+                    timeDisplay.textContent = generateCorruptedTime();
+                    timeDisplay.classList.add('corrupted-text');
+
+                    // Schedule the return to normal time
+                    setTimeout(() => {
+                        updateContainmentClockCore(timeDisplay);
+                        timeDisplay.classList.remove('corrupted-text');
+                    }, corruptionDuration);
+                    
+                } else {
+                    // Run normal clock function
+                    updateContainmentClockCore(timeDisplay);
+                }
+            }
+
+            function updateContainmentClockCore(timeDisplay) {
                 const now = new Date();
                 const difference = now.getTime() - CONTAINMENT_START_DATE.getTime();
 
@@ -372,8 +543,6 @@
                 const millisecondsInMinute = 60 * millisecondsInSecond;
                 const millisecondsInHour = 60 * millisecondsInMinute;
                 const millisecondsInDay = 24 * millisecondsInHour;
-
-                // Simple approximation for years (365.25 days per year)
                 const millisecondsInYear = millisecondsInDay * 365.25;
 
                 const years = Math.floor(difference / millisecondsInYear);
@@ -386,15 +555,15 @@
                 const remainingAfterHours = remainingAfterDays % millisecondsInHour;
 
                 const minutes = Math.floor(remainingAfterHours / millisecondsInMinute);
-                const remainingAfterMinutes = remainingAfterHours % millisecondsInMinute;
+                const remainingAfterMinutes = remainingAfterHours % millisecondsInSecond;
 
                 const seconds = Math.floor(remainingAfterMinutes / millisecondsInSecond);
 
                 // Format the output
                 const timeString = `${years} Yrs ${days.toString().padStart(3, '0')} Days ${hours.toString().padStart(2, '0')} Hrs ${minutes.toString().padStart(2, '0')} Mins ${seconds.toString().padStart(2, '0')} Secs`;
 
-                const timeDisplay = document.getElementById('time-display');
-                if (timeDisplay) {
+                // Only update if not currently showing corrupted text
+                if (!timeDisplay.classList.contains('corrupted-text')) {
                     timeDisplay.textContent = timeString;
                 }
             }
@@ -403,20 +572,44 @@
             updateContainmentClock();
             setInterval(updateContainmentClock, 1000);
 
-            // --- FULL SCREEN GLITCH LOGIC ---
-            function runFullScreenGlitch() {
-                // 1. Apply the full glitch class to the body
-                document.body.classList.add('full-glitch-active');
 
-                // 2. Schedule removal after a short, random duration (500ms to 1000ms)
-                const duration = Math.random() * 500 + 500; 
-                setTimeout(() => {
-                    document.body.classList.remove('full-glitch-active');
-                }, duration);
+            // --- SYSTEM STATUS LOGIC (FIXED TO CONTAINED) ---
+            const STATUS_STATES = [
+                { text: '[SYSTEM STATUS: CONTAINED]', class: 'text-neon', border: 'border-green-500' },
+                { text: '[STATUS: ANOMALY DETECTED]', class: 'text-yellow-400', border: 'border-yellow-400' },
+                { text: '[STATUS: MINOR DATA CORRUPTION]', class: 'text-red-300', border: 'border-red-300' },
+                { text: '[! BREACH IMMINENT !]', class: 'status-breach', border: 'border-red-600' }
+            ];
+
+            function updateSystemStatus() {
+                const statusDiv = document.getElementById('system-status');
+                const statusTextSpan = document.getElementById('status-text');
+                
+                // Check if a full-glitch is active to prevent status updates from interfering with the purple state
+                if (document.body.classList.contains('full-glitch-active')) return;
+
+                // Reset classes first
+                statusDiv.className = 'text-sm font-bold border p-1 text-center shadow-inner inline-block mx-auto md:mx-0';
+
+                // We permanently force the status to be CONTAINED (index 0)
+                let newState = STATUS_STATES[0]; 
+
+                // Apply new state
+                statusTextSpan.textContent = newState.text;
+                statusDiv.classList.add(newState.class, newState.border);
+
+                // Apply specific classes for breach state (This check will never trigger now but is harmless)
+                if (newState.text === '[! BREACH IMMINENT !]') {
+                    statusDiv.classList.add('status-breach');
+                }
             }
 
+            // Run the status update loop (faster than the clock)
+            updateSystemStatus();
+            setInterval(updateSystemStatus, 1500); // Check and update status every 1.5 seconds
 
-            // --- WORD GLITCH OVERLAY LOGIC ---
+
+            // --- WORD GLITCH OVERLAY LOGIC (Existing) ---
             const glitchPhrases = [
                 'ꖎᒷᔑ⍊ᒷ!', // 1: leave!
                 '⊣𝙹 ᔑ∴ᔑ||..', // 2: go away..
@@ -431,11 +624,21 @@
                 '╎\'ᒲ ∷ᒷᔑꖎ.. ∷╎⊣⍑ℸ ̣..', // 11: i'm real.. right..
                 '╎\'ᒲ ᓭ𝙹∷∷||..', // 12: i'm sorry..
                 '↸𝙹リ\'ℸ ̣    ꖎ𝙹𝙹ꖌ ᔑℸ ̣    ᒲᒷ..', // 13: don't look at me..
-                'リ⚍ꖎꖎ', // Keeping 'null' from the original list
-                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ' // Keeping 'static' from the original list
+                'リ⚍ꖎꖎ', 
+                'ᓭℸ ̣ ᔑℸ ̣ ╎ᓵ'
             ];
             const glitchOverlay = document.getElementById('glitch-flicker-overlay');
             const contentContainer = document.getElementById('content-container');
+
+            function runFullScreenGlitch() {
+                if (!document.body.classList.contains('full-glitch-active')) {
+                    document.body.classList.add('full-glitch-active');
+                    const duration = Math.random() * 500 + 500; 
+                    setTimeout(() => {
+                        document.body.classList.remove('full-glitch-active');
+                    }, duration);
+                }
+            }
 
             function runRandomGlitch() {
                 if (!contentContainer) {
@@ -448,36 +651,33 @@
                     runFullScreenGlitch();
                 }
 
-                // 1. Select a random phrase
                 const phrase = glitchPhrases[Math.floor(Math.random() * glitchPhrases.length)];
                 glitchOverlay.textContent = phrase;
                 
-                // 2. Set random position (within the bounds of the content area)
-                // Random X offset (30% to 70% of the content container width)
+                // Set random position 
                 const randomX = Math.random() * 40 + 30; 
-                // Random Y offset (20% to 80% of the content container height, relative to the main container)
                 const randomY = Math.random() * 60 + 20; 
 
                 glitchOverlay.style.left = `${randomX}%`;
                 glitchOverlay.style.top = `${randomY}%`;
                 
-                // 3. Display the glitch
+                // Display the glitch
                 glitchOverlay.style.display = 'inline-block';
                 glitchOverlay.classList.add('glitch-active');
 
-                // 4. Hide it quickly (DURATION: 150ms to 400ms)
+                // Hide it quickly (DURATION: 150ms to 400ms)
                 const displayDuration = Math.random() * 250 + 150; 
                 setTimeout(() => {
                     glitchOverlay.classList.remove('glitch-active');
                     glitchOverlay.style.display = 'none';
                 }, displayDuration);
 
-                // 5. Schedule the next glitch (INTERVAL: 500ms to 2.5 seconds)
+                // Schedule the next glitch (INTERVAL: 500ms to 2.5 seconds)
                 const nextGlitchTime = Math.random() * 2000 + 500; 
                 setTimeout(runRandomGlitch, nextGlitchTime);
             }
 
-            // Start the glitch loop
+            // Start the word glitch loop
             runRandomGlitch();
         });
     </script>
